@@ -33,8 +33,10 @@
                     <text x="125" y="160" font-family="'Poppins', Arial, sans-serif" font-size="10" fill="#A0AEC0" text-anchor="middle">SD College, Hoshiarpur</text>
                 </svg>
             </a>
-            <div>
-                <a href="#apply-form" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">Apply Now</a>
+            <div class="flex items-center"> <!-- Added flex items-center for better alignment -->
+                <!-- Netlify Identity Login/Menu -->
+                <div data-netlify-identity-menu class="text-sm"></div>
+                <a href="#apply-form" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ml-4">Apply Now</a>
             </div>
         </div>
     </nav>
@@ -97,6 +99,7 @@
         <section id="apply-form" class="py-16 fade-in-section">
             <h2 class="text-4xl font-bold playfair text-center mb-12 text-indigo-300">Ready to Apply?</h2>
             <div class="max-w-2xl mx-auto bg-slate-800 p-8 md:p-10 rounded-xl shadow-2xl">
+                <!-- Ensure your form has the name "application" for Netlify to pick it up -->
                 <form name="application" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-6">
                     <p class="hidden">
                         <label>Don’t fill this out if you’re human: <input name="bot-field" /></label>
@@ -147,7 +150,7 @@
         <p class="text-sm text-slate-500 mt-1">Empowering BCA students through real-world projects.</p>
     </footer>
 
-    <!-- AI Chat Widget -->
+    <!-- AI Chat Widget (existing) -->
     <button id="ai-chat-toggle-button" class="fixed bottom-6 right-6 bg-pink-500 hover:bg-pink-600 text-white font-bold p-4 rounded-full shadow-lg z-[60] transition-transform duration-300 ease-in-out hover:scale-110" aria-label="Toggle AI Chat">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-3.86 8.25-8.625 8.25S3.75 16.556 3.75 12C3.75 7.444 7.61 3.75 12.375 3.75S21 7.444 21 12z" />
@@ -163,7 +166,7 @@
                 </svg>
             </button>
         </div>
-        <div id="ai-chat-log" class="h-64 overflow-y-auto p-2 border border-slate-700 rounded-md bg-slate-900/50 space-y-3">
+        <div id="ai-chat-log" class="h-64 overflow-y-auto p-2 border border-slate-700 rounded-md bg-slate-900/50 space-y-3 flex flex-col">
             <!-- Chat messages will appear here -->
         </div>
         <div class="flex space-x-2">
@@ -178,6 +181,9 @@
 
     <!-- Link to your custom JavaScript file -->
     <script src="script.js"></script>
+
+    <!-- Netlify Identity Widget Script (Add this line) -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
 </body>
 </html>
