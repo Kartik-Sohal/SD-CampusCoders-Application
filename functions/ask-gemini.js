@@ -1,34 +1,6 @@
 // functions/ask-gemini.js
 
-// IMPORTANT: Your actual API key will be set as an environment variable in Netlify
-// const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // This is how you'll access it
-
-// For local testing (if you run Netlify Dev), you might use a .env file.
-// DO NOT COMMIT .env FILES WITH REAL KEYS.
-
-// Define your company's knowledge base here
-const KNOWLEDGE_BASE = `
-Company Name: SD CampusCoders
-Location: SD College, Hoshiarpur
-Mission: We are passionate about developing cutting-edge web solutions and supporting BCA students. We aim to shape the future with innovative minds. We empower BCA students through real-world projects.
-Core Activities: Developing web solutions, supporting BCA students.
-Why Join Us:
-- Innovative Projects: Work on cutting-edge projects that make a real impact. We encourage creativity and out-of-the-box thinking.
-- Supportive Team: Join a collaborative and inclusive environment where everyone's voice is heard and valued. We grow together.
-- Growth & Learning: We invest in your development with opportunities for learning, skill enhancement, and career progression.
-How to Apply: Interested candidates can apply through the form on our careers page. We look for full name, email, phone (optional), position applying for (or general application), LinkedIn (optional), resume/CV, and a cover letter (optional).
-Values: Innovation, collaboration, student empowerment, growth.
-Team Focus: Dynamic team of BCA students and mentors.
-Technology Stack (example, add more if known): HTML, CSS, JavaScript, Tailwind CSS, Netlify.
-Project Types: Real-world web development projects.
-Target Audience for Support: BCA students at SD College, Hoshiarpur.
-`;
-
 exports.handler = async function(event, context) {
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
-    }
-
     const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
     if (!GEMINI_API_KEY) {
@@ -39,82 +11,77 @@ exports.handler = async function(event, context) {
         };
     }
 
+    // --- TEMPORARY CODE TO LIST MODELS ---
     try {
-        const { userQuery } = JSON.parse(event.body);
-        if (!userQuery) {
-            return { statusCode: 400, body: JSON.stringify({ error: 'Missing userQuery' }) };
-        }
+        // Note: For ListModels, you generally don't specify a model in the URL path itself.
+        const LIST_MODELS_URL = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
 
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${GEMINI_API_KEY}`;
+        console.log(`Attempting to fetch available models from: ${LIST_MODELS_URL}`); // For Netlify logs
 
-        const prompt = `
-You are a friendly and helpful AI assistant for "SD CampusCoders".
-Your primary goal is to answer questions based *only* on the information provided below about SD CampusCoders.
-Do not use any external knowledge or make up information.
-If the user asks a question where the answer is not in the provided information, politely state that you don't have that specific information and suggest they check the website or contact SD CampusCoders directly for more details.
-Keep your answers concise and relevant.
-
-Provided Information about SD CampusCoders:
----
-${KNOWLEDGE_BASE}
----
-
-User's question: "${userQuery}"
-
-Answer:`;
-
-        const requestBody = {
-            contents: [{
-                parts: [{ text: prompt }]
-            }],
-            // Optional: Add generationConfig if needed
-            // generationConfig: {
-            //   temperature: 0.7,
-            //   topK: 1,
-            //   topP: 1,
-            //   maxOutputTokens: 256,
-            // }
-        };
-
-        const response = await fetch(API_URL, {
-            method: 'POST',
+        const response = await fetch(LIST_MODELS_URL, {
+            method: 'GET', // ListModels is a GET request
             headers: {
                 'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
+            }
         });
 
+        const responseText = await response.text(); // Get raw text first for debugging
+        console.log("Raw ListModels Response Status:", response.status);
+        // Avoid logging the full responseText here if it contains sensitive info or is too long for logs
+        // console.log("Raw ListModels Response Text:", responseText);
+
+
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Gemini API Error:', errorData);
-            let errorMessage = 'Failed to get response from AI service.';
-            if (errorData.error && errorData.error.message) {
-                errorMessage = errorData.error.message;
+            let errorDetails;
+            try {
+                errorDetails = JSON.parse(responseText); // Attempt to parse error
+            } catch (e) {
+                // If parsing fails, use the raw text
+                errorDetails = { message: "Failed to parse JSON error response from ListModels", rawResponse: responseText };
             }
-            return { statusCode: response.status, body: JSON.stringify({ error: errorMessage, details: errorData }) };
+            console.error('ListModels API Error Status:', response.status);
+            console.error('ListModels API Error Details:', errorDetails);
+            return {
+                statusCode: response.status,
+                body: JSON.stringify({
+                    error: `Failed to list models. HTTP Status: ${response.status}`,
+                    details: errorDetails
+                }),
+            };
         }
 
-        const data = await response.json();
-
-        let aiResponseText = "Sorry, I couldn't formulate a response at this moment.";
-        if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-            aiResponseText = data.candidates[0].content.parts[0].text;
-        } else if (data.promptFeedback && data.promptFeedback.blockReason) {
-            aiResponseText = `I couldn't process that request due to: ${data.promptFeedback.blockReason}. Please try rephrasing.`;
-             console.warn('AI response blocked:', data.promptFeedback);
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            console.error("Error parsing successful JSON from ListModels:", e);
+            console.error("Raw successful response text was:", responseText); // Log raw text if JSON parsing fails
+             return {
+                statusCode: 500,
+                body: JSON.stringify({
+                    error: `Failed to parse successful JSON response from ListModels.`,
+                    details: e.message,
+                    rawResponse: responseText // Include raw response for debugging
+                }),
+            };
         }
 
+        // This log is crucial for you to see in Netlify Function logs
+        console.log("Successfully fetched models. Full data:", JSON.stringify(data, null, 2));
 
+        // Return the list of models to the frontend so you can see it (optional, logs are primary)
         return {
             statusCode: 200,
-            body: JSON.stringify({ answer: aiResponseText.trim() }),
+            // The actual models are usually in a 'models' array within the response object
+            body: JSON.stringify({ availableModels: data.models || data }),
         };
 
     } catch (error) {
-        console.error('Error in Netlify function ask-gemini:', error);
+        console.error('Critical error in Netlify function (ListModels):', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Internal Server Error in AI function.', details: error.message }),
+            body: JSON.stringify({ error: 'Internal Server Error while attempting to list models.', details: error.message, stack: error.stack }),
         };
     }
+    // --- END TEMPORARY CODE ---
 };
