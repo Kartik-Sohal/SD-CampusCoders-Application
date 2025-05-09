@@ -1,0 +1,8 @@
+[build]
+  functions = "functions" # Tells Netlify your serverless functions are in the 'functions' directory
+
+# Optional: Specify Node.js version for functions if needed
+# [functions]
+#   node_bundler = "esbuild"
+#   [functions. "*" ]
+#    node_version = 18
