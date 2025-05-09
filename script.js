@@ -1,9 +1,3 @@
-// script.js
-
-// Set current year in footer (This part should be outside DOMContentLoaded if you want to keep it, or move it inside)
-// However, usually DOM related operations are inside DOMContentLoaded.
-// Let's assume all script.js content is meant to run after DOM is loaded.
-
 document.addEventListener('DOMContentLoaded', () => { // Ensure DOM is loaded
 
     const currentYearElement = document.getElementById('currentYear');
