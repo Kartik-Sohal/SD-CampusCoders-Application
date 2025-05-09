@@ -1,10 +1,53 @@
 // script.js
-// ... (all your existing code above the AI Chat Widget Logic) ...
 
-// --- AI Chat Widget Logic ---
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (your existing DOMContentLoaded code like currentYear, fade-in sections) ...
+// Set current year in footer (This part should be outside DOMContentLoaded if you want to keep it, or move it inside)
+// However, usually DOM related operations are inside DOMContentLoaded.
+// Let's assume all script.js content is meant to run after DOM is loaded.
 
+document.addEventListener('DOMContentLoaded', () => { // Ensure DOM is loaded
+
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
+
+    // Simple fade-in on scroll
+    const sections = document.querySelectorAll('.fade-in-section');
+    if (sections.length > 0) {
+        const observerOptions = {
+            root: null, // relative to document viewport
+            rootMargin: '0px',
+            threshold: 0.1 // 10% of item is visible
+        };
+
+        const observer = new IntersectionObserver((entries, observerInstance) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    // observerInstance.unobserve(entry.target); // Optional: stop observing after it's visible
+                } else {
+                    // Optional: remove class if you want it to fade out when scrolling back up
+                    // entry.target.classList.remove('is-visible');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    }
+
+    // Optional: Netlify form success message handling
+    // const form = document.querySelector('form[name="application"]');
+    // if (form && window.location.search.includes('status=success')) {
+    //     const successMessage = document.createElement('p');
+    //     successMessage.textContent = 'Thank you! Your application has been submitted successfully.';
+    //     successMessage.className = 'text-green-500 p-4 bg-green-100 rounded-md my-4';
+    //     form.parentNode.insertBefore(successMessage, form);
+    //     form.reset(); // Clear the form
+    // }
+
+    // --- AI Chat Widget Logic ---
     const chatToggleButton = document.getElementById('ai-chat-toggle-button');
     const chatWidgetContainer = document.getElementById('ai-chat-widget-container');
     const chatCloseButton = document.getElementById('ai-chat-close-button');
@@ -16,13 +59,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         chatToggleButton.addEventListener('click', () => {
             chatWidgetContainer.classList.toggle('hidden');
-            chatWidgetContainer.classList.toggle('flex');
+            chatWidgetContainer.classList.toggle('flex'); // Use flex for layout
             if (!chatWidgetContainer.classList.contains('hidden')) {
                 chatInput.focus();
+                 // Add initial welcome if chat is empty and widget is opened
                 if (chatLog.children.length === 0) {
-                    // For this test, we won't add the welcome message, or you can keep it.
-                    // addMessageToLog("Hi! I'm the SD CampusCoders AI. How can I help you today?", 'ai');
-                    addMessageToLog("Ready to list models. Send any message to trigger.", 'ai-status');
+                    addMessageToLog("Hi! I'm the SD CampusCoders AI. How can I help you today?", 'ai');
                 }
             }
         });
@@ -35,111 +77,128 @@ document.addEventListener('DOMContentLoaded', () => {
         chatSendButton.addEventListener('click', handleSendMessage);
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault();
+                e.preventDefault(); // Prevent form submission if inside one
                 handleSendMessage();
             }
         });
 
         function escapeHTML(str) {
-            // Simple escape, consider a library for more robust needs
-            return String(str).replace(/[&<>"']/g, function (match) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                }[match];
+            // A more robust HTML escaping function
+            if (typeof str !== 'string') return ''; // Handle non-string inputs
+            return str.replace(/[&<>"']/g, function (match) {
+                switch (match) {
+                    case '&': return '&amp;';
+                    case '<': return '&lt;';
+                    case '>': return '&gt;';
+                    case '"': return '&quot;';
+                    case "'": return '&#39;'; // or &apos;
+                    default: return match;
+                }
             });
         }
 
 
-        function addMessageToLog(message, sender = 'user', isLoading = false) {
+        function addMessageToLog(message, sender = 'user') {
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add('p-2.5', 'rounded-lg', 'max-w-[85%]', 'text-sm', 'leading-relaxed', 'break-words'); // Added break-words
+            // Common classes for all message bubbles
+            messageDiv.classList.add('p-2.5', 'rounded-lg', 'max-w-[85%]', 'text-sm', 'leading-relaxed', 'break-words', 'shadow-md');
             
-            let sanitizedMessage = typeof message === 'string' ? escapeHTML(message) : JSON.stringify(message, null, 2);
+            // Sanitize message content before inserting as HTML
+            const sanitizedMessage = escapeHTML(message);
 
             if (sender === 'user') {
-                messageDiv.classList.add('bg-indigo-500', 'text-white', 'self-end', 'ml-auto');
+                messageDiv.classList.add('bg-indigo-600', 'text-white', 'self-end', 'ml-auto');
                 messageDiv.innerHTML = sanitizedMessage;
             } else if (sender === 'ai') {
-                messageDiv.classList.add('bg-slate-700', 'text-slate-200', 'self-start', 'mr-auto');
-                // For displaying JSON from ListModels, wrap in <pre>
-                messageDiv.innerHTML = `<pre>${sanitizedMessage}</pre>`;
-            } else if (sender === 'ai-loading' || sender === 'ai-status') {
-                messageDiv.classList.add('bg-slate-700', 'text-slate-400', 'self-start', 'mr-auto', 'italic');
-                messageDiv.innerHTML = `<i>${sanitizedMessage}</i>`;
-                if (sender === 'ai-loading') messageDiv.id = 'ai-loading-message';
+                messageDiv.classList.add('bg-slate-700', 'text-slate-100', 'self-start', 'mr-auto');
+                // Basic Markdown-like formatting for bold and newlines (after sanitization)
+                let formattedMessage = sanitizedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Bold
+                formattedMessage = formattedMessage.replace(/\n/g, '<br>'); // Newlines
+                messageDiv.innerHTML = formattedMessage;
+            } else if (sender === 'ai-loading') {
+                messageDiv.classList.add('bg-slate-600', 'text-slate-300', 'self-start', 'mr-auto', 'italic');
+                messageDiv.innerHTML = `<i>${sanitizedMessage}</i>`; // Already sanitized
+                messageDiv.id = 'ai-loading-message'; // For easy removal
             } else if (sender === 'ai-error') {
-                messageDiv.classList.add('bg-red-700', 'text-red-100', 'self-start', 'mr-auto');
-                messageDiv.innerHTML = `<strong>Error:</strong> <pre>${sanitizedMessage}</pre>`;
+                messageDiv.classList.add('bg-red-600', 'text-red-100', 'self-start', 'mr-auto');
+                messageDiv.innerHTML = `<strong>Error:</strong> ${sanitizedMessage}`; // Already sanitized
             }
 
             chatLog.appendChild(messageDiv);
-            chatLog.scrollTop = chatLog.scrollHeight;
+            chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll to the latest message
         }
 
         async function handleSendMessage() {
             const userQuery = chatInput.value.trim();
-            // We don't even need the userQuery for ListModels, but we'll send something generic
-            // if (!userQuery) return; // Allow empty send for this test
+            if (!userQuery) return; // Don't send empty messages
 
-            addMessageToLog(userQuery || "(Triggering ListModels...)", 'user');
-            chatInput.value = '';
+            addMessageToLog(userQuery, 'user');
+            chatInput.value = ''; // Clear input field
             chatInput.disabled = true;
             chatSendButton.disabled = true;
             
+            // Remove previous loading message if any, then add new one
             const existingLoadingMessage = document.getElementById('ai-loading-message');
-            if (existingLoadingMessage) existingLoadingMessage.remove();
-            addMessageToLog('Fetching model list...', 'ai-loading');
+            if (existingLoadingMessage) {
+                existingLoadingMessage.remove();
+            }
+            addMessageToLog('SD CampusCoders AI is thinking...', 'ai-loading');
 
             try {
-                // The Netlify function is now modified to always call ListModels
                 const response = await fetch('/.netlify/functions/ask-gemini', {
-                    method: 'POST', // The temp function doesn't check method, but good to be consistent
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Body is not strictly needed by the temp function, but send an empty object or dummy
-                    body: JSON.stringify({ query: "list_models_request" }),
+                    body: JSON.stringify({ userQuery }),
                 });
 
+                // Remove the "Thinking..." message once response or error is received
                 const loadingMessage = document.getElementById('ai-loading-message');
-                if (loadingMessage) loadingMessage.remove();
-
-                const responseDataText = await response.text(); // Get text first to handle non-JSON errors
-                let data;
-                try {
-                    data = JSON.parse(responseDataText);
-                } catch (e) {
-                    // If response is not JSON, it's likely an error HTML page or non-JSON error
-                     addMessageToLog(`Non-JSON response (Status ${response.status}): ${escapeHTML(responseDataText.substring(0, 500))}`, 'ai-error'); // Show first 500 chars
-                    console.error("Non-JSON response from function:", responseDataText);
-                    return;
+                if (loadingMessage) {
+                    loadingMessage.remove();
                 }
 
-
-                if (!response.ok || data.error) { // Check for HTTP error or error in JSON body
-                    console.error("Error from AI service (ListModels):", data);
-                    addMessageToLog(data.error || `HTTP Error ${response.status}: ${JSON.stringify(data.details || data)}`, 'ai-error');
-                    return;
+                if (!response.ok) {
+                    let errorMsg = "Sorry, there was an issue connecting to the AI service.";
+                    try {
+                        // Try to parse the error response from the server
+                        const errorData = await response.json();
+                        errorMsg = errorData.error || (errorData.details && (errorData.details.error && errorData.details.error.message || JSON.stringify(errorData.details))) || `Server error: ${response.status}`;
+                        console.error("Error from AI service function:", errorData);
+                    } catch (e) {
+                        // If parsing the error JSON fails, use the status text
+                        console.error("Could not parse error JSON from AI service:", e);
+                        errorMsg = `Server error: ${response.status} ${response.statusText}`;
+                    }
+                    addMessageToLog(errorMsg, 'ai-error');
+                    return; // Exit after handling the error
                 }
-                
-                // Successfully got data, display it (data.availableModels should contain the list)
-                addMessageToLog(data.availableModels || data, 'ai'); // data.availableModels is what the temp function returns
+
+                // If response is OK, parse the successful JSON
+                const data = await response.json();
+                if (data.answer) {
+                    addMessageToLog(data.answer, 'ai');
+                } else {
+                    addMessageToLog("Received an unexpected response from the AI.", 'ai-error');
+                    console.warn("Unexpected data structure in AI response:", data);
+                }
 
             } catch (error) {
-                console.error('Error sending message to ListModels function:', error);
-                const loadingMessage = document.getElementById('ai-loading-message');
-                if (loadingMessage) loadingMessage.remove();
-                addMessageToLog(`Client-side error: ${error.message}`, 'ai-error');
+                // Catch client-side errors (e.g., network failure)
+                console.error('Client-side error sending message to AI function:', error);
+                const loadingMessage = document.getElementById('ai-loading-message'); // Ensure it's removed on error too
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+                addMessageToLog('An unexpected error occurred. Please check your connection or try again later.', 'ai-error');
             } finally {
+                // Re-enable input fields regardless of success or failure
                 chatInput.disabled = false;
                 chatSendButton.disabled = false;
-                chatInput.focus();
+                chatInput.focus(); // Set focus back to input field
             }
         }
     } else {
-        console.warn("AI Chat widget elements not found. Chat functionality will be disabled.");
+        console.warn("AI Chat widget elements not found in the DOM. Chat functionality will be disabled.");
     }
 });
 // --- End AI Chat Widget Logic ---
