@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- End Existing General Site Logic ---
 
-    // --- Helper function for HTML escaping (can be used by both CEO dash and Chat) ---
+    // --- Helper function for HTML escaping ---
     const escapeHTML = (str) => {
         if (typeof str !== 'string') return '';
         return str.replace(/[&<>"']/g, match => ({
@@ -37,23 +37,25 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ceoDashboardSection) {
             ceoDashboardSection.classList.toggle('hidden', !isCEO);
         }
-        if (isCEO) {
+        if (isCEO && applicationsListDiv) { // Check if applicationsListDiv exists before calling
             fetchAndDisplayPendingApplications(user);
+        } else if (isCEO && !applicationsListDiv) {
+            console.warn("applicationsListDiv not found, cannot fetch CEO applications.");
         }
     }
 
     async function fetchAndDisplayPendingApplications(user) {
         if (!applicationsListDiv || !ceoLoadingMessage || !ceoNoApplicationsMessage) {
-            console.warn("CEO dashboard elements not found for fetching applications.");
+            console.warn("CEO dashboard elements not fully found for fetching applications.");
             return;
         }
 
-        applicationsListDiv.innerHTML = ''; // Clear previous list
+        applicationsListDiv.innerHTML = ''; 
         ceoLoadingMessage.classList.remove('hidden');
         ceoNoApplicationsMessage.classList.add('hidden');
 
         try {
-            const token = await user.jwt(true); // Pass true to refresh token if needed
+            const token = await user.jwt(true); 
             const response = await fetch('/.netlify/functions/get-pending-applications', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -62,12 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ceoLoadingMessage.classList.add('hidden');
 
             if (!response.ok) {
-                const errorText = await response.text(); // Get raw text for more debug info
+                const errorText = await response.text();
                 let errorMsg = `Error ${response.status}: ${response.statusText}`;
-                try {
-                    const errorData = JSON.parse(errorText);
-                    errorMsg = errorData.error || errorMsg;
-                } catch (e) { /* Ignore if not JSON */ }
+                try { errorMsg = JSON.parse(errorText).error || errorMsg; } catch (e) { /* Ignore */ }
                 console.error("Error loading applications:", errorMsg, "Raw response:", errorText);
                 applicationsListDiv.innerHTML = `<p class="text-red-400 text-center">Error loading applications: ${escapeHTML(errorMsg)}</p>`;
                 return;
@@ -86,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (app.resume_data && typeof app.resume_data.url === 'string' && app.resume_data.url) {
                         resumeLinkHTML = `<a href="${escapeHTML(app.resume_data.url)}" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 underline">View Resume</a>`;
                     } else if (app.resume_data && typeof app.resume_data.filename === 'string') {
-                         resumeLinkHTML = `<span class="text-slate-400">${escapeHTML(app.resume_data.filename)} (URL not found)</span>`;
+                         resumeLinkHTML = `<span class="text-slate-400">${escapeHTML(app.resume_data.filename)} (URL not available/processed)</span>`;
                     }
 
                     appCard.innerHTML = `
@@ -109,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 document.querySelectorAll('.ceo-action-btn').forEach(button => {
-                    button.removeEventListener('click', handleApplicationAction); // Remove old if any
+                    button.removeEventListener('click', handleApplicationAction);
                     button.addEventListener('click', handleApplicationAction);
                 });
             }
@@ -121,25 +120,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function handleApplicationAction(event) {
-        const button = event.currentTarget; // Use currentTarget
+        const button = event.currentTarget;
         const applicationId = button.dataset.id;
         const newStatus = button.dataset.action;
-        const user = window.netlifyIdentity.currentUser();
+        const user = window.netlifyIdentity ? window.netlifyIdentity.currentUser() : null;
 
         if (!user || !applicationId || !newStatus) {
             console.error("Missing user, application ID, or new status for action.");
             return;
         }
 
-        // Disable both buttons in the card
-        const card = button.closest('.bg-slate-800');
-        const actionButtons = card ? card.querySelectorAll('.ceo-action-btn') : [];
+        const card = button.closest('.bg-slate-800'); // Find the parent card
+        const actionButtons = card ? card.querySelectorAll('.ceo-action-btn') : [button]; // Target buttons within the card or just the clicked one
         actionButtons.forEach(btn => {
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         });
         button.textContent = 'Processing...';
-
 
         try {
             const token = await user.jwt(true);
@@ -157,33 +154,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(`Error updating status: ${errorData.error}`);
                 actionButtons.forEach(btn => {
                     btn.disabled = false;
-                     btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
                 });
-                button.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1); // Reset text
+                 // Reset only the clicked button's text
+                button.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
                 return;
             }
             
-            // Visually remove the card instead of just an alert for better UX
             if (card) {
                 card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                 card.style.opacity = '0';
-                card.style.transform = 'scale(0.95)';
+                card.style.transform = 'scale(0.95) translateY(-20px)';
                 setTimeout(() => {
                     card.remove();
-                    // Check if no more pending applications are left to show the message
-                    if (applicationsListDiv.children.length === 0 && ceoNoApplicationsMessage) {
+                    if (applicationsListDiv && applicationsListDiv.children.length === 0 && ceoNoApplicationsMessage) {
                         ceoNoApplicationsMessage.classList.remove('hidden');
                     }
                 }, 500);
             } else {
-                 // Fallback if card not found, just refresh
-                fetchAndDisplayPendingApplications(user);
+                fetchAndDisplayPendingApplications(user); // Fallback if card isn't found
             }
-            // alert(`Application successfully ${newStatus}.`); // Optional alert
-
         } catch (error) {
             console.error("Failed to update application status:", error);
-            alert("An error occurred. Please try again.");
+            alert("An error occurred while updating. Please try again.");
             actionButtons.forEach(btn => {
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -193,16 +186,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', user => displayCEOControls(user));
+        console.log("Netlify Identity widget script loaded.");
+        window.netlifyIdentity.on('init', user => {
+            console.log("Netlify Identity 'init' event. User:", user ? user.email : 'No user');
+            displayCEOControls(user);
+        });
         window.netlifyIdentity.on('login', user => {
+            console.log("Netlify Identity 'login' event. User:", user.email);
             displayCEOControls(user);
             window.netlifyIdentity.close();
         });
-        window.netlifyIdentity.on('logout', () => displayCEOControls(null));
+        window.netlifyIdentity.on('logout', () => {
+            console.log("Netlify Identity 'logout' event.");
+            displayCEOControls(null);
+        });
+    } else {
+        console.warn("Netlify Identity widget (window.netlifyIdentity) not available on DOMContentLoaded.");
     }
     // --- End Netlify Identity & CEO Dashboard Logic ---
 
-    // --- AI Chat Widget Logic (to be enhanced in Step 6) ---
+    // --- AI Chat Widget Logic (Enhanced) ---
     const aiChatToggleButton = document.getElementById('ai-chat-toggle-button');
     const aiChatWidgetContainer = document.getElementById('ai-chat-widget-container');
     const aiChatCloseButton = document.getElementById('ai-chat-close-button');
@@ -230,11 +233,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') { e.preventDefault(); handleChatMessageSend(); }
         });
     } else {
-        console.warn("AI Chat widget elements not found.");
+        console.warn("AI Chat widget elements not fully found.");
     }
 
     function addChatMessageToLog(message, sender = 'user') {
-        if (!aiChatLog) return;
+        if (!aiChatLog) { console.warn("aiChatLog element not found for adding message."); return; }
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('p-2.5', 'rounded-lg', 'max-w-[85%]', 'text-sm', 'leading-relaxed', 'break-words', 'shadow-md');
         const sanitizedMessage = escapeHTML(message);
@@ -258,12 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function handleChatMessageSend() {
-        if (!aiChatInput || !aiChatSendButton) return;
+        if (!aiChatInput || !aiChatSendButton) { console.warn("AI chat input/send button not found."); return; }
         const userQuery = aiChatInput.value.trim();
         if (!userQuery) return;
 
         addChatMessageToLog(userQuery, 'user');
-        const originalInputText = aiChatInput.value; // Save for potential retry
+        const originalInputText = aiChatInput.value;
         aiChatInput.value = '';
         aiChatInput.disabled = true;
         aiChatSendButton.disabled = true;
@@ -276,14 +279,19 @@ document.addEventListener('DOMContentLoaded', () => {
         let headers = { 'Content-Type': 'application/json' };
         if (netlifyUser) {
             try {
-                const token = await netlifyUser.jwt(true);
+                const token = await netlifyUser.jwt(true); // true to refresh if needed
                 headers['Authorization'] = `Bearer ${token}`;
-            } catch (err) { console.error("Error getting JWT for chat:", err); }
+                console.log("Chat: Sending request with JWT for user:", netlifyUser.email);
+            } catch (err) { 
+                console.error("Error getting JWT for chat:", err);
+                // Proceed as guest if token fails
+            }
+        } else {
+            console.log("Chat: Sending request as guest (no Netlify user).");
         }
 
         try {
-            // In Step 6, this function name will change to 'ask-gemini-enhanced'
-            const response = await fetch('/.netlify/functions/ask-gemini', { 
+            const response = await fetch('/.netlify/functions/ask-gemini-enhanced', { 
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify({ userQuery })
@@ -294,25 +302,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                let errorMsg = `AI Error ${response.status}`;
-                try { errorMsg = JSON.parse(errorText).error || errorMsg; } catch (e) {/*ignore*/}
+                let errorMsg = `AI Service Error (${response.status})`;
+                try { errorMsg = JSON.parse(errorText).error || errorMsg; } catch (e) {/*ignore if not json*/}
                 addChatMessageToLog(errorMsg, 'ai-error');
-                console.error("AI Chat Error Details:", errorText);
+                console.error("AI Chat Error From Function - Details:", errorText);
                 aiChatInput.value = originalInputText; // Restore input on error
                 return;
             }
             const data = await response.json();
-            addChatMessageToLog(data.answer || "Sorry, I couldn't get a response.", 'ai');
+            addChatMessageToLog(data.answer || "Sorry, I couldn't get a valid response from the AI.", 'ai');
         } catch (error) {
             const loadingMsg = document.getElementById('ai-loading-message');
             if(loadingMsg) loadingMsg.remove();
-            addChatMessageToLog('Connection error. Please try again.', 'ai-error');
-            console.error('Chat send client-side error:', error);
+            addChatMessageToLog('A connection error occurred. Please check your network and try again.', 'ai-error');
+            console.error('Chat send client-side fetch error:', error);
             aiChatInput.value = originalInputText; // Restore input on error
         } finally {
             aiChatInput.disabled = false;
             aiChatSendButton.disabled = false;
-            if (!aiChatInput.value) aiChatInput.focus(); // Only focus if it was cleared
+            if (!aiChatInput.value) aiChatInput.focus(); // Focus if input was cleared
         }
     }
     // --- End AI Chat Widget Logic ---
