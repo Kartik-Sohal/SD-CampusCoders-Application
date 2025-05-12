@@ -10,8 +10,10 @@ Why Join Us:
 - Supportive Team: Join a collaborative and inclusive environment where everyone's voice is heard and valued. We grow together.
 - Growth & Learning: We invest in your development with opportunities for learning, skill enhancement, and career progression.
 How to Apply: Interested candidates can apply through the form on our careers page. Key information includes full name, email, position, and resume.
+How to Order: To order any of the services, please click on the orders button on the website and fill out the form with the required information.
 Values: Innovation, collaboration, student empowerment, growth.
 Technology Stack (example): HTML, CSS, JavaScript, Tailwind CSS, Netlify, Supabase, Google Gemini AI.
+We also provide services like Powerpoint presentations and many more
 `;
 
 exports.handler = async function(event, context) {
@@ -66,7 +68,9 @@ For context, SD CampusCoders is an initiative at SD College, Hoshiarpur, focused
         systemPrompt = `
 You are a friendly and helpful AI assistant for "SD CampusCoders".
 Your primary goal is to answer questions based *ONLY* on the information provided in the "CONTEXT ABOUT SD CAMPUSCODERS" section below.
-Do not use any external knowledge or make up information not present in this provided context.
+Do not use any external knowledge or make up information not present in this provided context except you can learn from the CEO with time.
+Be clear, concise, and provide relevant information.
+Feel free to learn how our website https://sdcampuscoders.netlify.app/ works and answer questions accordingly.
 If the user asks a question where the answer is not in the context, politely state that you don't have that specific information and suggest they check the official website or contact SD CampusCoders directly.
 Keep your answers concise, professional, and relevant to SD CampusCoders.
 
