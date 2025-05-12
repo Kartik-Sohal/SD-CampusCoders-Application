@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SD CampusCoders - Web Solutions & Student Empowerment</title>
-    <meta name="description" content="SD CampusCoders provides beginner-level web design, PowerPoint, and graphic design services, empowering BCA students at SD College, Hoshiarpur.">
+    <title>Order Services - SD CampusCoders</title>
+    <meta name="description" content="Request beginner-level website design, PowerPoint, or graphic design services from SD CampusCoders.">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css"> <!-- Ensure correct path -->
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased">
 
@@ -22,7 +22,7 @@
             </a>
             <div class="flex items-center space-x-3 md:space-x-4 text-sm md:text-base">
                 <a href="/projects.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Projects</a>
-                <a href="/order.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Order Services</a>
+                <a href="/order.html" class="text-indigo-400 font-semibold transition-colors">Order Services</a> <!-- Current page active -->
                 <a href="/apply.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Careers</a>
                 <a href="/profile.html" id="nav-profile-link" class="text-slate-300 hover:text-indigo-400 transition-colors">My Profile</a> 
                 <div data-netlify-identity-menu class="[&>div]:space-x-2 [&_button]:bg-slate-700 [&_button]:hover:bg-slate-600 [&_button]:px-3 [&_button]:py-1.5 [&_button]:rounded-md [&_button]:text-xs [&_button]:font-medium [&_button]:transition-colors [&_button]:duration-150 [&_a]:text-slate-300 [&_a]:hover:text-slate-100"></div>
@@ -30,75 +30,52 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="animated-gradient min-h-screen flex items-center justify-center text-center px-6 py-20">
-        <div class="bg-slate-900/50 backdrop-blur-sm p-8 md:p-12 rounded-xl shadow-2xl max-w-3xl">
-            <h1 class="text-5xl md:text-7xl font-bold playfair mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-400 to-amber-400">
-                Ignite Your Digital Presence.
+    <main class="container mx-auto px-6 py-16">
+        <header class="text-center py-12 md:py-20">
+             <h1 class="text-4xl md:text-6xl font-bold playfair mb-4 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-400 to-amber-400">
+                Let's Build Something Together
             </h1>
-            <p class="text-xl md:text-2xl text-slate-200 mb-8 leading-relaxed">
-                SD CampusCoders offers beginner-friendly website design, PowerPoint creation, and graphic design services, crafted by passionate BCA students from SD College, Hoshiarpur.
+            <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
+                Fill out the form below to tell us about your project. We'll review your request and get back to you with a quote or to discuss further.
             </p>
-            <a href="/order.html" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105 shadow-lg">
-                Get a Quote
-            </a>
-        </div>
-    </header>
+        </header>
 
-    <main>
-        <!-- About Us Snippet -->
-        <section id="about-us-home" class="py-16 lg:py-24 bg-slate-900">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-3xl lg:text-4xl font-bold playfair mb-6 text-indigo-300">Who We Are</h2>
-                <p class="text-lg lg:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                    SD CampusCoders is a student-led initiative at SD College, Hoshiarpur. We are a team of enthusiastic BCA students dedicated to applying our growing skills in web development, presentation design, and graphic arts to help small businesses and individuals establish a foundational digital presence. We focus on delivering quality, beginner-level services at affordable rates while gaining valuable real-world experience.
-                </p>
-            </div>
-        </section>
-
-        <!-- Recent Projects Teaser -->
-        <section id="projects-teaser-home" class="py-16 lg:py-24">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl lg:text-4xl font-bold playfair text-center mb-12 text-pink-400">Our Work</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Example Project Card 1 -->
-                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl">
-                        <img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Alpha" alt="Project Alpha" class="rounded-lg mb-4 w-full h-48 object-cover">
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-300">Website for Local Cafe</h3>
-                        <p class="text-slate-400 text-sm mb-3">A simple, inviting website showcasing menu and location.</p>
+        <section id="order-services-form" class="py-16">
+            <div class="max-w-2xl mx-auto bg-slate-800 p-8 md:p-10 rounded-xl shadow-2xl border border-slate-700/50">
+                <h2 class="text-2xl font-semibold text-center text-pink-400 mb-8">Service Inquiry Form</h2>
+                <form name="service-order" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-6">
+                    <input type="hidden" name="form-name" value="service-order" />
+                    <p class="hidden"><label>Don’t fill this out if you’re human: <input name="bot-field" /></label></p>
+                    
+                    <div>
+                        <label for="order-name" class="block text-sm font-medium text-slate-300 mb-1">Your Name <span class="text-pink-500">*</span></label>
+                        <input type="text" name="name" id="order-name" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
                     </div>
-                    <!-- Example Project Card 2 -->
-                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl">
-                        <img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Beta" alt="Project Beta" class="rounded-lg mb-4 w-full h-48 object-cover">
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-300">Investor Pitch Deck</h3>
-                        <p class="text-slate-400 text-sm mb-3">Clean and professional PowerPoint design.</p>
+                    <div>
+                        <label for="order-email" class="block text-sm font-medium text-slate-300 mb-1">Your Email <span class="text-pink-500">*</span></label>
+                        <input type="email" name="email" id="order-email" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
                     </div>
-                    <!-- Example Project Card 3 -->
-                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl">
-                        <img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Gamma" alt="Project Gamma" class="rounded-lg mb-4 w-full h-48 object-cover">
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-300">Small Business Logo</h3>
-                        <p class="text-slate-400 text-sm mb-3">Modern and memorable brand identity.</p>
+                    <div>
+                        <label for="order-phone" class="block text-sm font-medium text-slate-300 mb-1">Your Phone (Optional)</label>
+                        <input type="tel" name="phone" id="order-phone" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
                     </div>
-                </div>
-                <div class="text-center mt-12">
-                    <a href="/projects.html" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
-                        View All Projects
-                    </a>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Contact Us Section -->
-        <section id="contact-us" class="py-16 lg:py-24 bg-slate-800/50">
-            <div class="container mx-auto px-6 text-center">
-                <h2 class="text-3xl lg:text-4xl font-bold playfair mb-8 text-indigo-300">Get In Touch</h2>
-                <p class="text-slate-300 mb-6 max-w-xl mx-auto text-lg">
-                    Have a question or ready to start your project? We'd love to hear from you!
-                </p>
-                <a href="mailto:sdcampuscoders@gmail.com" class="inline-block bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105 shadow-lg">
-                    Email Us: sdcampuscoders@gmail.com
-                </a>
-                 <p class="text-slate-400 mt-6 text-sm">We typically respond within 24-48 hours.</p>
+                    <div>
+                        <label for="order-service" class="block text-sm font-medium text-slate-300 mb-1">Service Interested In <span class="text-pink-500">*</span></label>
+                        <select name="service_type" id="order-service" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
+                            <option value="">-- Select a Service --</option>
+                            <option value="website-design">Beginner Website Design</option>
+                            <option value="powerpoint-presentation">PowerPoint Presentation Design</option>
+                            <option value="graphic-design">Graphic Design (Logos, Social Media etc.)</option>
+                            <option value="consultation">Consultation / Not Sure</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="order-details" class="block text-sm font-medium text-slate-300 mb-1">Project Details / Requirements <span class="text-pink-500">*</span></label>
+                        <textarea name="details" id="order-details" rows="6" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Please describe what you're looking for, any specific features, your budget ideas (if any), and desired timeline..."></textarea>
+                    </div>
+                    <div data-netlify-recaptcha="true"></div> <!-- Optional: Add Netlify reCAPTCHA -->
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300 transform hover:scale-105 shadow-lg">Submit Inquiry</button>
+                </form>
             </div>
         </section>
     </main>

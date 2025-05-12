@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Projects - SD CampusCoders</title>
+    <meta name="description" content="View recent beginner-level website, PowerPoint, and graphic design projects by SD CampusCoders.">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css"> <!-- Ensure correct path -->
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="/" aria-label="SD CampusCoders Home">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 180" class="h-12 md:h-14 w-auto" aria-hidden="true">
+                    <defs><linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#0A3D62; stop-opacity:1" /><stop offset="100%" style="stop-color:#1C4E80; stop-opacity:1" /></linearGradient></defs>
+                    <path d="M 50 10 L 200 10 L 200 90 Q 125 150 50 90 Z" fill="url(#shieldGradient)" stroke="#A0AEC0" stroke-width="2"/><text x="125" y="75" font-family="'Poppins', Arial, sans-serif" font-size="50" fill="white" text-anchor="middle" font-weight="bold">SD</text><text x="65" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7">&lt;</text><text x="185" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7" text-anchor="end">&gt;</text><text x="125" y="138" font-family="'Poppins', Arial, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="600">CampusCoders</text><text x="125" y="160" font-family="'Poppins', Arial, sans-serif" font-size="10" fill="#A0AEC0" text-anchor="middle">SD College, Hoshiarpur</text>
+                </svg>
+            </a>
+            <div class="flex items-center space-x-3 md:space-x-4 text-sm md:text-base">
+                <a href="/projects.html" class="text-indigo-400 font-semibold transition-colors">Projects</a> <!-- Current page active -->
+                <a href="/order.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Order Services</a>
+                <a href="/apply.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Careers</a>
+                <a href="/profile.html" id="nav-profile-link" class="text-slate-300 hover:text-indigo-400 transition-colors">My Profile</a> 
+                <div data-netlify-identity-menu class="[&>div]:space-x-2 [&_button]:bg-slate-700 [&_button]:hover:bg-slate-600 [&_button]:px-3 [&_button]:py-1.5 [&_button]:rounded-md [&_button]:text-xs [&_button]:font-medium [&_button]:transition-colors [&_button]:duration-150 [&_a]:text-slate-300 [&_a]:hover:text-slate-100"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-16">
+        <header class="text-center py-12 md:py-20">
+            <h1 class="text-4xl md:text-6xl font-bold playfair mb-4 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-400 to-amber-400">
+                Our Portfolio
+            </h1>
+            <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
+                Take a look at some of the beginner-level projects we've proudly delivered.
+            </p>
+        </header>
+
+        <section id="recent-projects" class="py-16">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Example Project Card 1 -->
+                <div class="bg-slate-800 p-6 rounded-xl shadow-xl transform hover:scale-105 transition duration-300 flex flex-col">
+                    <img src="https://via.placeholder.com/600x400/2c3e50/ecf0f1?text=Bakery+Website" alt="Project 1 Thumbnail" class="rounded-lg mb-4 w-full h-52 object-cover">
+                    <h3 class="text-2xl font-semibold mb-2 text-pink-400">Local Bakery Site</h3>
+                    <p class="text-slate-300 text-sm mb-3 grow">A charming and simple website for a neighborhood bakery, featuring their products, story, and contact details. Built with HTML, CSS, and a touch of JavaScript.</p>
+                    <a href="#" class="mt-auto text-indigo-400 hover:text-indigo-300 font-semibold self-start">View Live (Example) &rarr;</a>
+                </div>
+                <!-- Example Project Card 2 -->
+                <div class="bg-slate-800 p-6 rounded-xl shadow-xl transform hover:scale-105 transition duration-300 flex flex-col">
+                    <img src="https://via.placeholder.com/600x400/34495e/bdc3c7?text=Startup+Pitch+Deck" alt="Project 2 Thumbnail" class="rounded-lg mb-4 w-full h-52 object-cover">
+                    <h3 class="text-2xl font-semibold mb-2 text-pink-400">Startup Pitch Deck</h3>
+                    <p class="text-slate-300 text-sm mb-3 grow">A clean, professional PowerPoint presentation designed to help a new startup secure initial interest. Focused on clear messaging and impactful visuals.</p>
+                    <a href="#" class="mt-auto text-indigo-400 hover:text-indigo-300 font-semibold self-start">View Sample Slides &rarr;</a>
+                </div>
+                <!-- Example Project Card 3 -->
+                <div class="bg-slate-800 p-6 rounded-xl shadow-xl transform hover:scale-105 transition duration-300 flex flex-col">
+                    <img src="https://via.placeholder.com/600x400/16a085/ecf0f1?text=Tutor+Logo+Design" alt="Project 3 Thumbnail" class="rounded-lg mb-4 w-full h-52 object-cover">
+                    <h3 class="text-2xl font-semibold mb-2 text-pink-400">Tutor Logo & Graphics</h3>
+                    <p class="text-slate-300 text-sm mb-3 grow">A friendly logo and a set of social media graphics for a local academic tutor, aiming for an approachable and trustworthy brand image.</p>
+                    <a href="#" class="mt-auto text-indigo-400 hover:text-indigo-300 font-semibold self-start">See Graphics &rarr;</a>
+                </div>
+                 <!-- Add more project cards as you complete them -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900/80 border-t border-slate-700/50 py-8 text-center">
+        <p class="text-slate-400">&copy; <span id="currentYear"></span> SD CampusCoders. All rights reserved.</p>
+        <p class="text-sm text-slate-500 mt-1">Empowering BCA students through real-world projects at SD College, Hoshiarpur.</p>
+    </footer>
+
+    <!-- AI Chat Widget (existing) -->
+    <button id="ai-chat-toggle-button" class="fixed bottom-6 right-6 bg-pink-500 hover:bg-pink-600 text-white font-bold p-4 rounded-full shadow-lg z-[60] transition-transform duration-300 ease-in-out hover:scale-110" aria-label="Toggle AI Chat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-3.86 8.25-8.625 8.25S3.75 16.556 3.75 12C3.75 7.444 7.61 3.75 12.375 3.75S21 7.444 21 12z" /></svg></button>
+    <div id="ai-chat-widget-container" class="fixed bottom-20 right-6 sm:bottom-6 sm:right-24 bg-slate-800/90 backdrop-blur-sm p-4 rounded-xl shadow-2xl max-w-md w-[calc(100%-3rem)] sm:w-full z-50 hidden flex-col space-y-3 border border-slate-700"><div class="flex justify-between items-center"><h3 class="text-lg font-semibold text-pink-400">Ask SD CampusCoders AI</h3><button id="ai-chat-close-button" class="text-slate-400 hover:text-slate-200" aria-label="Close AI Chat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="ai-chat-log" class="h-64 overflow-y-auto p-2 border border-slate-700 rounded-md bg-slate-900/50 space-y-3 flex flex-col"></div><div class="flex space-x-2"><input type="text" id="ai-chat-input" class="flex-grow p-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Ask a question..."><button id="ai-chat-send-button" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2.5 rounded-lg transition duration-300">Send</button></div></div>
+
+    <script src="/script.js"></script> <!-- Ensure path to script.js is correct -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</body>
+</html>
