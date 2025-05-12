@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // Must be service role key
+  process.env.SUPABASE_SERVICE_KEY // this matches what you have
 );
 
 export const handler = async (event, context) => {
