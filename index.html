@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SD CampusCoders - Web Solutions & Student Empowerment</title>
     <meta name="description" content="SD CampusCoders provides beginner-level web design, PowerPoint, and graphic design services, empowering BCA students at SD College, Hoshiarpur.">
-    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml"> <!-- Assuming logo.svg is in the root -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css"> <!-- Assuming style.css is in the root -->
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased">
 
@@ -20,11 +20,12 @@
                     <path d="M 50 10 L 200 10 L 200 90 Q 125 150 50 90 Z" fill="url(#shieldGradient)" stroke="#A0AEC0" stroke-width="2"/><text x="125" y="75" font-family="'Poppins', Arial, sans-serif" font-size="50" fill="white" text-anchor="middle" font-weight="bold">SD</text><text x="65" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7">&lt;</text><text x="185" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7" text-anchor="end">&gt;</text><text x="125" y="138" font-family="'Poppins', Arial, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="600">CampusCoders</text><text x="125" y="160" font-family="'Poppins', Arial, sans-serif" font-size="10" fill="#A0AEC0" text-anchor="middle">SD College, Hoshiarpur</text>
                 </svg>
             </a>
-            <div class="flex items-center space-x-3 md:space-x-4 text-sm md:text-base">
-                <a href="/projects.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Projects</a>
-                <a href="/order.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Order Services</a>
-                <a href="/apply.html" class="text-slate-300 hover:text-indigo-400 transition-colors">Careers</a>
-                <a href="/profile.html" id="nav-profile-link" class="text-slate-300 hover:text-indigo-400 transition-colors">My Profile</a> 
+            <div class="flex items-center space-x-2 md:space-x-3 text-sm md:text-base">
+                <a href="/projects.html" class="text-slate-300 hover:text-indigo-400 transition-colors px-2 py-1">Projects</a>
+                <a href="/order.html" class="text-slate-300 hover:text-indigo-400 transition-colors px-2 py-1">Order Services</a>
+                <a href="/apply.html" class="text-slate-300 hover:text-indigo-400 transition-colors px-2 py-1">Careers</a>
+                <a href="/profile.html" id="nav-profile-link" class="text-slate-300 hover:text-indigo-400 transition-colors px-2 py-1 hidden">My Profile</a> 
+                <span id="nav-username-display" class="text-pink-400 text-xs md:text-sm hidden px-2 py-1 whitespace-nowrap"></span>
                 <div data-netlify-identity-menu class="[&>div]:space-x-2 [&_button]:bg-slate-700 [&_button]:hover:bg-slate-600 [&_button]:px-3 [&_button]:py-1.5 [&_button]:rounded-md [&_button]:text-xs [&_button]:font-medium [&_button]:transition-colors [&_button]:duration-150 [&_a]:text-slate-300 [&_a]:hover:text-slate-100"></div>
             </div>
         </div>
@@ -46,6 +47,18 @@
     </header>
 
     <main>
+        <!-- CEO Dashboard Section - Hidden by default -->
+        <section id="ceo-dashboard" class="py-16 hidden bg-slate-800/30">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold playfair text-center mb-12 text-amber-300">CEO Dashboard - Pending Applications</h2>
+                <div id="ceo-loading-message" class="text-center text-slate-300 my-8 text-lg">Loading applications...</div>
+                <div id="ceo-no-applications-message" class="text-center text-slate-400 my-8 hidden text-lg">No pending applications.</div>
+                <div id="applications-list" class="space-y-8 max-w-4xl mx-auto">
+                    <!-- Application cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+
         <!-- About Us Snippet -->
         <section id="about-us-home" class="py-16 lg:py-24 bg-slate-900">
             <div class="container mx-auto px-6 text-center">
@@ -61,30 +74,11 @@
             <div class="container mx-auto px-6">
                 <h2 class="text-3xl lg:text-4xl font-bold playfair text-center mb-12 text-pink-400">Our Work</h2>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Example Project Card 1 -->
-                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl">
-                        <img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Alpha" alt="Project Alpha" class="rounded-lg mb-4 w-full h-48 object-cover">
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-300">Website for Local Cafe</h3>
-                        <p class="text-slate-400 text-sm mb-3">A simple, inviting website showcasing menu and location.</p>
-                    </div>
-                    <!-- Example Project Card 2 -->
-                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl">
-                        <img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Beta" alt="Project Beta" class="rounded-lg mb-4 w-full h-48 object-cover">
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-300">Investor Pitch Deck</h3>
-                        <p class="text-slate-400 text-sm mb-3">Clean and professional PowerPoint design.</p>
-                    </div>
-                    <!-- Example Project Card 3 -->
-                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl">
-                        <img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Gamma" alt="Project Gamma" class="rounded-lg mb-4 w-full h-48 object-cover">
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-300">Small Business Logo</h3>
-                        <p class="text-slate-400 text-sm mb-3">Modern and memorable brand identity.</p>
-                    </div>
+                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl"><img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Alpha" alt="Project Alpha" class="rounded-lg mb-4 w-full h-48 object-cover"><h3 class="text-xl font-semibold mb-2 text-indigo-300">Website for Local Cafe</h3><p class="text-slate-400 text-sm mb-3">A simple, inviting website showcasing menu and location.</p></div>
+                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl"><img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Beta" alt="Project Beta" class="rounded-lg mb-4 w-full h-48 object-cover"><h3 class="text-xl font-semibold mb-2 text-indigo-300">Investor Pitch Deck</h3><p class="text-slate-400 text-sm mb-3">Clean and professional PowerPoint design.</p></div>
+                    <div class="bg-slate-800 p-6 rounded-xl shadow-xl"><img src="https://via.placeholder.com/400x250/1e293b/64748b?text=Project+Gamma" alt="Project Gamma" class="rounded-lg mb-4 w-full h-48 object-cover"><h3 class="text-xl font-semibold mb-2 text-indigo-300">Small Business Logo</h3><p class="text-slate-400 text-sm mb-3">Modern and memorable brand identity.</p></div>
                 </div>
-                <div class="text-center mt-12">
-                    <a href="/projects.html" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
-                        View All Projects
-                    </a>
-                </div>
+                <div class="text-center mt-12"><a href="/projects.html" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">View All Projects</a></div>
             </div>
         </section>
         
@@ -92,12 +86,8 @@
         <section id="contact-us" class="py-16 lg:py-24 bg-slate-800/50">
             <div class="container mx-auto px-6 text-center">
                 <h2 class="text-3xl lg:text-4xl font-bold playfair mb-8 text-indigo-300">Get In Touch</h2>
-                <p class="text-slate-300 mb-6 max-w-xl mx-auto text-lg">
-                    Have a question or ready to start your project? We'd love to hear from you!
-                </p>
-                <a href="mailto:sdcampuscoders@gmail.com" class="inline-block bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105 shadow-lg">
-                    Email Us: sdcampuscoders@gmail.com
-                </a>
+                <p class="text-slate-300 mb-6 max-w-xl mx-auto text-lg">Have a question or ready to start your project? We'd love to hear from you!</p>
+                <a href="mailto:contact@sdcampuscoders.example.com" class="inline-block bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 transform hover:scale-105 shadow-lg">Email Us: contact@sdcampuscoders.example.com</a>
                  <p class="text-slate-400 mt-6 text-sm">We typically respond within 24-48 hours.</p>
             </div>
         </section>
@@ -108,11 +98,11 @@
         <p class="text-sm text-slate-500 mt-1">Empowering BCA students through real-world projects at SD College, Hoshiarpur.</p>
     </footer>
 
-    <!-- AI Chat Widget (existing) -->
-    <button id="ai-chat-toggle-button" class="fixed bottom-6 right-6 bg-pink-500 hover:bg-pink-600 text-white font-bold p-4 rounded-full shadow-lg z-[60] transition-transform duration-300 ease-in-out hover:scale-110" aria-label="Toggle AI Chat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-3.86 8.25-8.625 8.25S3.75 16.556 3.75 12C3.75 7.444 7.61 3.75 12.375 3.75S21 7.444 21 12z" /></svg></button>
-    <div id="ai-chat-widget-container" class="fixed bottom-20 right-6 sm:bottom-6 sm:right-24 bg-slate-800/90 backdrop-blur-sm p-4 rounded-xl shadow-2xl max-w-md w-[calc(100%-3rem)] sm:w-full z-50 hidden flex-col space-y-3 border border-slate-700"><div class="flex justify-between items-center"><h3 class="text-lg font-semibold text-pink-400">Ask SD CampusCoders AI</h3><button id="ai-chat-close-button" class="text-slate-400 hover:text-slate-200" aria-label="Close AI Chat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="ai-chat-log" class="h-64 overflow-y-auto p-2 border border-slate-700 rounded-md bg-slate-900/50 space-y-3 flex flex-col"></div><div class="flex space-x-2"><input type="text" id="ai-chat-input" class="flex-grow p-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Ask a question..."><button id="ai-chat-send-button" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2.5 rounded-lg transition duration-300">Send</button></div></div>
+    <!-- AI Chat Widget -->
+    <button id="ai-chat-toggle-button" class="fixed bottom-6 right-6 bg-pink-500 hover:bg-pink-600 text-white font-bold p-4 rounded-full shadow-lg z-[60]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-3.86 8.25-8.625 8.25S3.75 16.556 3.75 12C3.75 7.444 7.61 3.75 12.375 3.75S21 7.444 21 12z" /></svg></button>
+    <div id="ai-chat-widget-container" class="fixed bottom-20 right-6 sm:bottom-6 sm:right-24 bg-slate-800/90 backdrop-blur-sm p-4 rounded-xl shadow-2xl max-w-md w-[calc(100%-3rem)] sm:w-full z-50 hidden flex-col space-y-3 border border-slate-700"><div class="flex justify-between items-center"><h3 class="text-lg font-semibold text-pink-400">Ask SD CampusCoders AI</h3><button id="ai-chat-close-button" class="text-slate-400 hover:text-slate-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="ai-chat-log" class="h-64 overflow-y-auto p-2 border border-slate-700 rounded-md bg-slate-900/50 space-y-3 flex flex-col"></div><div class="flex space-x-2"><input type="text" id="ai-chat-input" class="flex-grow p-2.5 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Ask a question..."><button id="ai-chat-send-button" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2.5 rounded-lg transition duration-300">Send</button></div></div>
 
-    <script src="/script.js"></script> <!-- Ensure path to script.js is correct -->
+    <script type="module" src="/js/main.js"></script> 
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </body>
 </html>
