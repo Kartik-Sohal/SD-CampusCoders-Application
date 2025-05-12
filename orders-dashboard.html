@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders Dashboard - SD CampusCoders</title>
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased">
+    <!-- Navigation (Consistent with other pages) -->
+    <nav class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="/" aria-label="SD CampusCoders Home"><svg><!-- SVG Logo --></svg></a>
+            <div class="flex items-center space-x-2 md:space-x-3 text-sm md:text-base">
+                <a href="/projects.html" class="text-slate-300 hover:text-indigo-400 px-2 py-1">Projects</a>
+                <a href="/order.html" class="text-slate-300 hover:text-indigo-400 px-2 py-1">Order Services</a>
+                <a href="/apply.html" class="text-slate-300 hover:text-indigo-400 px-2 py-1">Careers</a>
+                <a href="/orders-dashboard.html" id="nav-orders-dashboard-link" class="text-indigo-400 font-semibold px-2 py-1 hidden">Orders</a> <!-- Hidden by default -->
+                <a href="/profile.html" id="nav-profile-link" class="text-slate-300 hover:text-indigo-400 px-2 py-1 hidden">My Profile</a> 
+                <span id="nav-username-display" class="text-pink-400 text-xs md:text-sm hidden px-2 py-1 whitespace-nowrap"></span>
+                <div data-netlify-identity-menu class="[&>div]:space-x-2 [&_button]:bg-slate-700 ..."></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-16 min-h-[calc(100vh-200px)]">
+        <section id="orders-dashboard-content" class="py-10 hidden"> <!-- Hidden by default, shown by JS if authorized -->
+            <h1 class="text-4xl font-bold playfair text-center mb-12 text-amber-300">Service Orders Dashboard</h1>
+            
+            <div class="mb-8 flex justify-center space-x-4">
+                <button id="filter-new" class="order-filter-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">New</button>
+                <button id="filter-in-progress" class="order-filter-btn bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md">In Progress</button>
+                <button id="filter-completed" class="order-filter-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Completed</button>
+                <button id="filter-rejected" class="order-filter-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">Rejected</button>
+                <button id="filter-all" class="order-filter-btn bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-md">All</button>
+            </div>
+
+            <div id="orders-loading" class="text-center text-slate-300 my-8 text-lg">Loading orders...</div>
+            <div id="orders-none-found" class="text-center text-slate-400 my-8 hidden text-lg">No orders found for this filter.</div>
+            <div id="orders-list-container" class="space-y-6">
+                <!-- Orders will be rendered here by orders-dashboard-page.js -->
+            </div>
+        </section>
+
+        <div id="orders-unauthorized-prompt" class="hidden text-center my-12">
+            <p class="text-slate-300 text-lg mb-4">You do not have permission to view this page.</p>
+            <p class="text-slate-400 text-sm">If you believe this is an error, please contact an administrator.</p>
+            <a href="/" class="inline-block mt-6 bg-indigo-500 text-white px-6 py-3 rounded-lg">Back to Home</a>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900/80 border-t border-slate-700/50 py-8 text-center">
+        <p>&copy; <span id="currentYear"></span> SD CampusCoders.</p>
+    </footer>
+
+    <script type="module" src="/js/main.js"></script>
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</body>
+</html>

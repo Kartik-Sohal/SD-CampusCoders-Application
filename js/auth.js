@@ -1,22 +1,70 @@
 // js/auth.js
-import { updateCeoDashboardVisibility } from './ceo-dashboard.js'; // Assuming initCeoDashboard handles its own visibility
-import { updateUserProfilePage } from './profile-page.js';   // Assuming initProfilePage handles its own visibility
+import { updateCeoDashboardVisibility } from './ceo-dashboard.js'; 
+import { updateUserProfilePage } from './profile-page.js';   
+// We don't directly import updateUserOrderPage, initOrderPage will be called by main.js
+// or we can call it here if the element exists.
 
 const navProfileLink = document.getElementById('nav-profile-link');
-const navUsernameDisplay = document.getElementById('nav-username-display'); // If you added this
+const navUsernameDisplay = document.getElementById('nav-username-display');
+// Navigation link for Orders Dashboard
+const navOrdersDashboardLink = document.getElementById('nav-orders-dashboard-link');
+
 
 export function updateNavOnAuthStateChange(user) {
+    const isEmployeeOrHigher = user && user.app_metadata && user.app_metadata.roles &&
+                               (user.app_metadata.roles.includes('employee') || 
+                                user.app_metadata.roles.includes('order_manager') || 
+                                user.app_metadata.roles.includes('ceo'));
+
     if (navProfileLink) {
         navProfileLink.classList.toggle('hidden', !user);
     }
+    if (navOrdersDashboardLink) {
+        navOrdersDashboardLink.classList.toggle('hidden', !isEmployeeOrHigher);
+    }
+
     if (navUsernameDisplay) {
-        if (user && user.user_metadata) {
-            navUsernameDisplay.textContent = `Hi, ${user.user_metadata.full_name || user.email.split('@')[0]}`;
+        if (user && user.user_metadata && user.user_metadata.full_name) {
+            navUsernameDisplay.textContent = `Hi, ${user.user_metadata.full_name}`;
+            navUsernameDisplay.classList.remove('hidden');
+        } else if (user && user.email) {
+            navUsernameDisplay.textContent = `Hi, ${user.email.split('@')[0]}`;
             navUsernameDisplay.classList.remove('hidden');
         } else {
             navUsernameDisplay.classList.add('hidden');
             navUsernameDisplay.textContent = '';
         }
+    }
+}
+
+// This function will be called by main.js and by auth events
+// to re-initialize page-specific modules if their root elements are present.
+function reinitializePageSpecificModules(user) {
+    if (document.getElementById('ceo-dashboard')) {
+        // updateCeoDashboardVisibility is typically called directly, no need to re-import
+        updateCeoDashboardVisibility(user);
+    }
+    if (document.getElementById('profile-management')) {
+        updateUserProfilePage(user);
+    }
+    if (document.getElementById('service-order-form')) {
+        // For order page, its init function handles user state
+        import('./order-page.js').then(module => module.initOrderPage());
+    }
+    if (document.getElementById('orders-dashboard-content')) { // For the new orders dashboard page
+        // We'll need an init function in orders-dashboard-page.js similar to others
+        // For now, let's assume it exists or will be added.
+        import('./orders-dashboard-page.js') // Assuming you'll create this file
+            .then(module => {
+                if (module.initOrdersDashboardPage) {
+                    module.initOrdersDashboardPage();
+                } else {
+                    // Fallback if initOrdersDashboardPage not yet implemented
+                    // We might just call a visibility function if that's all it does initially.
+                    // For now, ensure your orders-dashboard-page.js exports initOrdersDashboardPage
+                }
+            })
+            .catch(err => console.error("Auth: Failed to load Orders Dashboard module for reinitialization:", err));
     }
 }
 
@@ -26,37 +74,25 @@ export function initAuth() {
         window.netlifyIdentity.on('init', user => {
             console.log("Auth: Netlify Identity 'init', User:", user ? user.email : 'none');
             updateNavOnAuthStateChange(user);
-            // Page specific updates based on auth state
-            if (document.getElementById('ceo-dashboard')) updateCeoDashboardVisibility(user);
-            if (document.getElementById('profile-management')) updateUserProfilePage(user);
+            reinitializePageSpecificModules(user);
         });
 
         window.netlifyIdentity.on('login', user => {
             console.log("Auth: Netlify Identity 'login', User:", user.email);
             updateNavOnAuthStateChange(user);
-            if (document.getElementById('ceo-dashboard')) updateCeoDashboardVisibility(user);
-            if (document.getElementById('profile-management')) updateUserProfilePage(user);
+            reinitializePageSpecificModules(user);
             window.netlifyIdentity.close();
         });
 
         window.netlifyIdentity.on('logout', () => {
             console.log("Auth: Netlify Identity 'logout'");
             updateNavOnAuthStateChange(null);
-            if (document.getElementById('ceo-dashboard')) updateCeoDashboardVisibility(null);
-            if (document.getElementById('profile-management')) updateUserProfilePage(null);
-            // Optional: Redirect to home on logout from certain pages
-            // if (window.location.pathname.includes('/profile.html')) {
-            //     window.location.href = "/"; 
-            // }
+            reinitializePageSpecificModules(null);
         });
     } else {
-        // Handle case where identity widget might not be loaded yet or available
-        // Potentially hide profile link if no user can be determined
-        if (navProfileLink) navProfileLink.classList.add('hidden');
-        if (navUsernameDisplay) navUsernameDisplay.classList.add('hidden');
+        updateNavOnAuthStateChange(null); // Set nav to logged-out state
+        // Call reinitialize with null to hide protected content if identity fails to load
+        reinitializePageSpecificModules(null); 
         console.warn("Auth: Netlify Identity widget not available on initAuth call.");
-         // If on profile page and no identity, trigger the prompt (handled by profile-page.js init)
-        if (document.getElementById('profile-management')) updateUserProfilePage(null);
-
     }
 }
