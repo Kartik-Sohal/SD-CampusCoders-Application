@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Services - SD CampusCoders</title>
-    <meta name="description" content="Request beginner-level website design, PowerPoint, or graphic design services from SD CampusCoders.">
+    <meta name="description" content="Request beginner-level website design, PowerPoint, or graphic design services from SD CampusCoders. Login required to place an order.">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/style.css"> <!-- Make sure this path is correct -->
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased">
 
-    <!-- Navigation (Same as before, ensure nav-username-display and nav-profile-link are present) -->
+    <!-- Navigation (Ensure this is consistent and includes necessary IDs like nav-username-display) -->
     <nav class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <a href="/" aria-label="SD CampusCoders Home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 180" class="h-12 md:h-14 w-auto" aria-hidden="true"><defs><linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#0A3D62; stop-opacity:1" /><stop offset="100%" style="stop-color:#1C4E80; stop-opacity:1" /></linearGradient></defs><path d="M 50 10 L 200 10 L 200 90 Q 125 150 50 90 Z" fill="url(#shieldGradient)" stroke="#A0AEC0" stroke-width="2"/><text x="125" y="75" font-family="'Poppins', Arial, sans-serif" font-size="50" fill="white" text-anchor="middle" font-weight="bold">SD</text><text x="65" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7"><</text><text x="185" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7" text-anchor="end">></text><text x="125" y="138" font-family="'Poppins', Arial, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="600">CampusCoders</text><text x="125" y="160" font-family="'Poppins', Arial, sans-serif" font-size="10" fill="#A0AEC0" text-anchor="middle">SD College, Hoshiarpur</text></svg></a>
+            <a href="/" aria-label="SD CampusCoders Home">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 180" class="h-12 md:h-14 w-auto" aria-hidden="true"><defs><linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#0A3D62; stop-opacity:1" /><stop offset="100%" style="stop-color:#1C4E80; stop-opacity:1" /></linearGradient></defs><path d="M 50 10 L 200 10 L 200 90 Q 125 150 50 90 Z" fill="url(#shieldGradient)" stroke="#A0AEC0" stroke-width="2"/><text x="125" y="75" font-family="'Poppins', Arial, sans-serif" font-size="50" fill="white" text-anchor="middle" font-weight="bold">SD</text><text x="65" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7">&lt;</text><text x="185" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7" text-anchor="end">&gt;</text><text x="125" y="138" font-family="'Poppins', Arial, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="600">CampusCoders</text><text x="125" y="160" font-family="'Poppins', Arial, sans-serif" font-size="10" fill="#A0AEC0" text-anchor="middle">SD College, Hoshiarpur</text></svg>
+            </a>
             <div class="flex items-center space-x-2 md:space-x-3 text-sm md:text-base">
-                <a href="/orders-dashboard.html" id="nav-orders-dashboard-link" class="text-slate-300 hover:text-indigo-400 px-2 py-1 hidden">Orders Dashboard</a>
                 <a href="/projects.html" class="text-slate-300 hover:text-indigo-400 px-2 py-1">Projects</a>
-                <a href="/order.html" class="text-indigo-400 font-semibold px-2 py-1">Order Services</a>
+                <a href="/order.html" class="text-indigo-400 font-semibold px-2 py-1">Order Services</a> <!-- Current page -->
                 <a href="/apply.html" class="text-slate-300 hover:text-indigo-400 px-2 py-1">Careers</a>
+                <a href="/orders-dashboard.html" id="nav-orders-dashboard-link" class="text-slate-300 hover:text-indigo-400 px-2 py-1 hidden">Orders Dashboard</a>
                 <a href="/profile.html" id="nav-profile-link" class="text-slate-300 hover:text-indigo-400 px-2 py-1 hidden">My Profile</a> 
                 <span id="nav-username-display" class="text-pink-400 text-xs md:text-sm hidden px-2 py-1 whitespace-nowrap"></span>
                 <div data-netlify-identity-menu class="[&>div]:space-x-2 [&_button]:bg-slate-700 [&_button]:hover:bg-slate-600 [&_button]:px-3 [&_button]:py-1.5 [&_button]:rounded-md [&_button]:text-xs [&_button]:font-medium"></div>
@@ -27,37 +29,39 @@
         </div>
     </nav>
 
-    <main class="container mx-auto px-6 py-16">
-        <header class="text-center py-12 md:py-20">
+    <main class="container mx-auto px-6 py-16 min-h-[calc(100vh-200px)]"> <!-- Added min-height -->
+        <header class="text-center pt-12 pb-8 md:pt-20 md:pb-12">
              <h1 class="text-4xl md:text-6xl font-bold playfair mb-4 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-pink-400 to-amber-400">
-                Let's Build Something Together
+                Order Our Services
             </h1>
             <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto" id="order-page-subtitle">
-                Fill out the form below to tell us about your project. We'll review your request and get back to you.
+                <!-- This subtitle will be updated by JavaScript based on login state -->
+                Loading... 
             </p>
         </header>
 
-        <section id="order-services-form-section" class="py-10"> <!-- Renamed ID for clarity -->
-            <!-- Login Prompt - Initially hidden, shown by JS if not logged in -->
+        <!-- This ID is used by main.js to know it should initialize order-page.js -->
+        <section id="order-services-form-section" class="pb-16"> 
+            <!-- Login Prompt - Initially hidden, JS will show if needed -->
             <div id="order-login-prompt" class="hidden max-w-2xl mx-auto bg-slate-800 p-8 md:p-10 rounded-xl shadow-2xl border border-slate-700/50 text-center">
-                <h2 class="text-2xl font-semibold text-pink-400 mb-6">Login Required</h2>
-                <p class="text-slate-300 mb-6 text-lg">Please log in or sign up to place a service inquiry. This helps us keep track of your orders.</p>
+                <h2 class="text-2xl font-semibold text-pink-400 mb-6">Login Required to Place an Order</h2> 
+                <p class="text-slate-300 mb-6 text-lg">Please log in or sign up to place a service inquiry. This helps us keep track of your orders and allows you to view their status in your profile.</p>
                 <button data-netlify-identity-button class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">Log In / Sign Up</button>
             </div>
 
-            <!-- Order Form - Initially hidden, shown by JS if logged in -->
+            <!-- Order Form - Initially hidden, JS will show if logged in -->
             <div id="order-form-container" class="hidden max-w-2xl mx-auto bg-slate-800 p-8 md:p-10 rounded-xl shadow-2xl border border-slate-700/50">
                 <h2 class="text-2xl font-semibold text-center text-pink-400 mb-8">Service Inquiry Form</h2>
                 <form name="service-order" id="service-order-form" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" class="space-y-6">
                     <input type="hidden" name="form-name" value="service-order" />
                     <p class="hidden"><label>Don’t fill this out: <input name="bot-field" /></label></p>
                     
-                    <div><label for="order-name" class="block text-sm font-medium text-slate-300 mb-1">Your Name <span class="text-pink-500">*</span></label><input type="text" name="name" id="order-name" required class="w-full p-3 bg-slate-700 rounded-lg"></div>
-                    <div><label for="order-email" class="block text-sm font-medium text-slate-300 mb-1">Your Email <span class="text-pink-500">*</span></label><input type="email" name="email" id="order-email" required class="w-full p-3 bg-slate-700 rounded-lg"></div>
-                    <div><label for="order-phone" class="block text-sm font-medium text-slate-300 mb-1">Your Phone (Optional)</label><input type="tel" name="phone" id="order-phone" class="w-full p-3 bg-slate-700 rounded-lg"></div>
+                    <div><label for="order-name" class="block text-sm font-medium text-slate-300 mb-1">Your Name <span class="text-pink-500">*</span></label><input type="text" name="name" id="order-name" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"></div>
+                    <div><label for="order-email" class="block text-sm font-medium text-slate-300 mb-1">Your Email <span class="text-pink-500">*</span></label><input type="email" name="email" id="order-email" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"></div>
+                    <div><label for="order-phone" class="block text-sm font-medium text-slate-300 mb-1">Your Phone (Optional)</label><input type="tel" name="phone" id="order-phone" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"></div>
                     <div>
                         <label for="order-service" class="block text-sm font-medium text-slate-300 mb-1">Service Interested In <span class="text-pink-500">*</span></label>
-                        <select name="service_type" id="order-service" required class="w-full p-3 bg-slate-700 rounded-lg">
+                        <select name="service_type" id="order-service" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none">
                             <option value="">-- Select a Service --</option>
                             <option value="website-design">Beginner Website Design</option>
                             <option value="powerpoint-presentation">PowerPoint Presentation Design</option>
@@ -65,17 +69,23 @@
                             <option value="consultation">Consultation / Not Sure</option>
                         </select>
                     </div>
-                    <div><label for="order-details" class="block text-sm font-medium text-slate-300 mb-1">Project Details / Requirements <span class="text-pink-500">*</span></label><textarea name="details" id="order-details" rows="6" required class="w-full p-3 bg-slate-700 rounded-lg" placeholder="Please describe what you're looking for..."></textarea></div>
-                    <!-- Netlify reCAPTCHA can still be useful even with JS submission -->
-                    <div data-netlify-recaptcha="true"></div>
-                    <button type="submit" id="submit-order-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg">Submit Inquiry</button>
+                    <div><label for="order-details" class="block text-sm font-medium text-slate-300 mb-1">Project Details / Requirements <span class="text-pink-500">*</span></label><textarea name="details" id="order-details" rows="6" required class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Please describe what you're looking for..."></textarea></div>
+                    <div data-netlify-recaptcha="true"></div> <!-- Optional: Netlify reCAPTCHA -->
+                    <button type="submit" id="submit-order-button" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300">Submit Inquiry</button>
                 </form>
                 <div id="order-form-message" class="mt-4 text-center text-sm"></div>
             </div>
         </section>
     </main>
 
-    <footer class="bg-slate-900/80 border-t border-slate-700/50 py-8 text-center"><!-- Footer content --></footer>
+    <footer class="bg-slate-900/80 border-t border-slate-700/50 py-8 text-center">
+        <p class="text-slate-400">&copy; <span id="currentYear"></span> SD CampusCoders. All rights reserved.</p>
+        <p class="text-sm text-slate-500 mt-1">Empowering BCA students through real-world projects at SD College, Hoshiarpur.</p>
+    </footer>
+
+    <!-- AI Chat Widget -->
+    <button id="ai-chat-toggle-button" class="fixed bottom-6 right-6 bg-pink-500 hover:bg-pink-600 text-white font-bold p-4 rounded-full shadow-lg z-[60]"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-3.86 8.25-8.625 8.25S3.75 16.556 3.75 12C3.75 7.444 7.61 3.75 12.375 3.75S21 7.444 21 12z" /></svg></button>
+    <div id="ai-chat-widget-container" class="fixed bottom-20 right-6 sm:bottom-6 sm:right-24 bg-slate-800/90 backdrop-blur-sm p-4 rounded-xl shadow-2xl max-w-md w-[calc(100%-3rem)] sm:w-full z-50 hidden flex-col space-y-3 border border-slate-700"><div class="flex justify-between items-center"><h3 class="text-lg font-semibold text-pink-400">Ask SD CampusCoders AI</h3><button id="ai-chat-close-button" class="text-slate-400 hover:text-slate-200"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="ai-chat-log" class="h-64 overflow-y-auto p-2 border border-slate-700 rounded-md bg-slate-900/50 space-y-3 flex flex-col"></div><div class="flex space-x-2"><input type="text" id="ai-chat-input" class="flex-grow p-2.5 bg-slate-700 rounded-lg text-slate-100 focus:ring-indigo-500"><button id="ai-chat-send-button" class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2.5 rounded-lg">Send</button></div></div>
     
     <script type="module" src="/js/main.js"></script>
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>

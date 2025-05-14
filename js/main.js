@@ -83,19 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(err => console.error("Main.js: Failed to load Profile Page module:", err));
     }
 
-    if (document.getElementById('service-order-form')) { 
-        console.log("Main.js: Service Order Form element found, loading module...");
-        import('./order-page.js')
-            .then(module => {
-                if (module.initOrderPage) { // Check if function exists
-                    module.initOrderPage();
-                    console.log("Main.js: Order Page module initialized.");
-                } else {
-                    console.warn("Main.js: initOrderPage function not found in order-page.js module.");
-                }
-            })
-            .catch(err => console.error("Main.js: Failed to load Order Page module:", err));
-    }
+if (document.getElementById('order-services-form-section')) { // Use the ID of the main section
+    console.log("Main.js: Order Page section element found, loading module...");
+    import('./order-page.js')
+        .then(module => {
+            if (module.initOrderPage) { 
+                module.initOrderPage();
+                console.log("Main.js: Order Page module initialized.");
+            } else { /* ... */ }
+        })
+        .catch(err => console.error("Main.js: Failed to load Order Page module:", err));
+}
     
     if (document.getElementById('orders-dashboard-content')) { // For the new orders dashboard page
         console.log("Main.js: Orders Dashboard Content element found, loading module...");
