@@ -46,7 +46,7 @@ export const handler = async (event, context) => {
     console.log('📦 Payload received:', payload);
 
     // Step 4: Validate required fields
-    const requiredFields = ['service_type', 'title', 'email', 'description'];
+    const requiredFields = ['customer_name', 'customer_email', 'service_type', 'project_details'];
     for (const field of requiredFields) {
       if (!payload[field]) {
         console.warn(`❗ Missing required field: ${field}`);
