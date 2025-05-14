@@ -59,7 +59,7 @@ async function handleOrderFormSubmit(event) {
 
     // This is the payload that service-order-created.js expects directly
     const dataToSend = {
-        name: formProps.name,
+        title: formProps.name,
         email: formProps.email,
         phone: formProps.phone,
         service_type: formProps.service_type,
