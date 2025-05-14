@@ -4,6 +4,31 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY // this matches what you have
 );
+// Check if user exists in `users` table
+const { data: existingUser, error: userCheckError } = await supabase
+  .from('users')
+  .select('*')
+  .eq('id', user.sub)
+  .single();
+
+if (userCheckError && userCheckError.code !== 'PGRST116') {
+  console.error('Error checking user:', userCheckError);
+}
+
+if (!existingUser) {
+  console.log('User not found in Supabase. Inserting...');
+  const { error: insertUserError } = await supabase.from('users').insert([{
+    id: user.sub,
+    email: user.email,
+    full_name: user.user_metadata?.full_name || null,
+    avatar_url: user.user_metadata?.avatar_url || null,
+    created_at: new Date().toISOString()
+  }]);
+
+  if (insertUserError) {
+    console.error('Error inserting user:', insertUserError);
+  }
+}
 
 export const handler = async (event, context) => {
   console.log('--- service-order-created INVOCATION ---');
