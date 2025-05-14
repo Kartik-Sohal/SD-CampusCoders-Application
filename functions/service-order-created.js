@@ -5,7 +5,11 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-    // ✅ Check if user exists in Supabase users table
+exports.handler = async (event, context) => {
+  console.log('--- service-order-created INVOCATION ---');
+  console.log('Timestamp:', new Date().toISOString());
+
+      // ✅ Check if user exists in Supabase users table
     const { data: existingUser, error: userCheckError } = await supabase
       .from('users')
       .select('*')
@@ -36,10 +40,6 @@ const supabase = createClient(
         };
       }
     }
-
-exports.handler = async (event, context) => {
-  console.log('--- service-order-created INVOCATION ---');
-  console.log('Timestamp:', new Date().toISOString());
 
   try {
     const user = context.clientContext && context.clientContext.user;
