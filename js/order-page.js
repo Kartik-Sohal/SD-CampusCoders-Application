@@ -58,13 +58,14 @@ async function handleOrderFormSubmit(event) {
     const formProps = Object.fromEntries(formData);
 
     // This is the payload that service-order-created.js expects directly
-    const dataToSend = {
-        title: formProps.name,
-        email: formProps.email,
-        phone: formProps.phone,
-        service_type: formProps.service_type,
-        details: formProps.details
-    };
+const dataToSend = {
+  customer_name: formProps.name,
+  customer_email: formProps.email,
+  customer_phone: formProps.phone,
+  service_type: formProps.service_type,
+  project_details: formProps.details
+};
+
     
     let headers = { 'Content-Type': 'application/json' };
     let token;
