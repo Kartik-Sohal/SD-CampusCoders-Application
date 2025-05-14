@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inquiry Received! - SD CampusCoders</title>
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased">
+    <!-- Navigation -->
+    <nav class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
+        <!-- ... Your consistent navigation ... -->
+    </nav>
+
+    <main class="container mx-auto px-6 py-24 text-center min-h-[calc(100vh-200px)] flex flex-col justify-center items-center">
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-green-400 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h1 class="text-3xl md:text-4xl font-bold playfair text-green-300 mb-4">Thank You!</h1>
+            <p class="text-slate-300 text-lg mb-3">Your service inquiry has been successfully submitted.</p>
+            <p class="text-slate-400 text-base mb-8">We'll review your request and get back to you as soon as possible, typically within 24-48 hours.</p>
+            <div class="space-x-4">
+                <a href="/" class="inline-block bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg transition duration-300">Back to Home</a>
+                <a href="/profile.html#my-orders-section" id="view-my-orders-link" class="inline-block bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold px-6 py-3 rounded-lg transition duration-300 hidden">View My Inquiries</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900/80 border-t border-slate-700/50 py-8 text-center">
+        <!-- ... Your consistent footer ... -->
+    </footer>
+    
+    <script type="module" src="/js/main.js"></script> <!-- For nav auth state -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+        // Small script for thank-you page to show "View My Inquiries" if user is logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.netlifyIdentity) {
+                const user = window.netlifyIdentity.currentUser();
+                const viewOrdersLink = document.getElementById('view-my-orders-link');
+                if (user && viewOrdersLink) {
+                    viewOrdersLink.classList.remove('hidden');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

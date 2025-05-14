@@ -121,6 +121,48 @@ const dataToSend = {
     }
 }
 
+async function handleOrderFormSubmit(event) {
+    // ... (prevent default, get user, button disabling, get formData, get JWT, setup headers) ...
+    // ... (all the existing logic before the fetch call) ...
+
+    try {
+        const response = await fetch('/.netlify/functions/service-order-created', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(dataToSend) 
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: `Server error: ${response.status}. Please try again.`}));
+            orderFormMessage.textContent = `Error: ${escapeHTML(errorData.error || 'Could not submit your inquiry.')}`;
+            orderFormMessage.className = 'mt-4 text-center text-sm text-red-400'; // Ensure red on error
+            console.error("Order Page: Error response from service-order-created:", errorData);
+            // No redirect on error, user stays on form to see message
+        } else {
+            // SUCCESS!
+            // orderForm.reset(); // Optional: reset form before redirecting
+            // Instead of just showing a message, redirect to thank you page
+            window.location.href = '/thank-you-order.html'; 
+            // The message on the thank you page will confirm success.
+            // If you want to pass the orderId to the thank you page, you could do:
+            // const result = await response.json();
+            // window.location.href = `/thank-you-order.html?orderId=${result.orderId}`;
+            // Then thank-you-order.html could use JS to read this query param if needed.
+        }
+
+    } catch (error) { // This catch is for client-side fetch errors (e.g., network down)
+        console.error('Order Page: Error submitting order inquiry via JS fetch:', error);
+        orderFormMessage.textContent = 'A network connection error occurred. Please check your connection and try again.';
+        orderFormMessage.className = 'mt-4 text-center text-sm text-red-400'; // Ensure red on error
+    } finally {
+        // Re-enable button only if there was an error and we didn't redirect
+        if (!window.location.pathname.endsWith('/thank-you-order.html')) { // Check if not redirected
+             submitOrderButton.disabled = false;
+             submitOrderButton.textContent = 'Submit Inquiry';
+        }
+    }
+}
+
 export function initOrderPage() {
     if (!document.getElementById('service-order-form') && !document.getElementById('order-login-prompt')) {
         return; // Not on the order page, or essential elements are missing
