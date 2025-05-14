@@ -9,7 +9,10 @@ exports.handler = async (event, context) => {
   console.log('--- service-order-created INVOCATION ---');
   console.log('Timestamp:', new Date().toISOString());
 
-      // ✅ Check if user exists in Supabase users table
+  try {
+    const user = context.clientContext && context.clientContext.user;
+
+          // ✅ Check if user exists in Supabase users table
     const { data: existingUser, error: userCheckError } = await supabase
       .from('users')
       .select('*')
@@ -40,9 +43,6 @@ exports.handler = async (event, context) => {
         };
       }
     }
-
-  try {
-    const user = context.clientContext && context.clientContext.user;
 
     if (!user) {
       console.warn('❌ No user found in context');
