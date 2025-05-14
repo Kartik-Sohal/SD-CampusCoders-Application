@@ -5,6 +5,38 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
+    // ✅ Check if user exists in Supabase users table
+    const { data: existingUser, error: userCheckError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.sub)
+      .single();
+
+    if (userCheckError && userCheckError.code !== 'PGRST116') {
+      console.error('Error checking user:', userCheckError);
+    }
+
+    if (!existingUser) {
+      console.log('User not found in Supabase. Inserting...');
+      const { error: insertUserError } = await supabase.from('users').insert([
+        {
+          id: user.sub,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || null,
+          avatar_url: user.user_metadata?.avatar_url || null,
+          created_at: new Date().toISOString()
+        }
+      ]);
+
+      if (insertUserError) {
+        console.error('Error inserting user:', insertUserError);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ message: 'Failed to insert user', error: insertUserError }),
+        };
+      }
+    }
+
 exports.handler = async (event, context) => {
   console.log('--- service-order-created INVOCATION ---');
   console.log('Timestamp:', new Date().toISOString());
@@ -46,38 +78,6 @@ exports.handler = async (event, context) => {
         return {
           statusCode: 400,
           body: JSON.stringify({ message: `Missing required field: ${field}` }),
-        };
-      }
-    }
-
-    // ✅ Check if user exists in Supabase users table
-    const { data: existingUser, error: userCheckError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.sub)
-      .single();
-
-    if (userCheckError && userCheckError.code !== 'PGRST116') {
-      console.error('Error checking user:', userCheckError);
-    }
-
-    if (!existingUser) {
-      console.log('User not found in Supabase. Inserting...');
-      const { error: insertUserError } = await supabase.from('users').insert([
-        {
-          id: user.sub,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || null,
-          avatar_url: user.user_metadata?.avatar_url || null,
-          created_at: new Date().toISOString()
-        }
-      ]);
-
-      if (insertUserError) {
-        console.error('Error inserting user:', insertUserError);
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ message: 'Failed to insert user', error: insertUserError }),
         };
       }
     }
