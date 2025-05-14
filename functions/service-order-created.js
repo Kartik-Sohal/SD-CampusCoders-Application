@@ -12,7 +12,20 @@ exports.handler = async (event, context) => {
   try {
     const user = context.clientContext && context.clientContext.user;
 
-          // ✅ Check if user exists in Supabase users table
+    if (!user) {
+      console.warn('❌ No user found in context');
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: 'Unauthorized: No user found in context' }),
+      };
+    }
+
+    console.log('✅ User object from clientContext is PRESENT.');
+    console.log('User Email:', user.email);
+    console.log('User Roles:', user.app_metadata?.roles);
+    console.log('User Sub (ID):', user.sub);
+
+    // ✅ Check if user exists in Supabase users table
     const { data: existingUser, error: userCheckError } = await supabase
       .from('users')
       .select('*')
@@ -43,19 +56,6 @@ exports.handler = async (event, context) => {
         };
       }
     }
-
-    if (!user) {
-      console.warn('❌ No user found in context');
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ message: 'Unauthorized: No user found in context' }),
-      };
-    }
-
-    console.log('✅ User object from clientContext is PRESENT.');
-    console.log('User Email:', user.email);
-    console.log('User Roles:', user.app_metadata?.roles);
-    console.log('User Sub (ID):', user.sub);
 
     let payload;
     try {
