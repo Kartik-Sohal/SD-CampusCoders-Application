@@ -1,122 +1,125 @@
+// functions/service-order-created.js
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+// Initialize Supabase client variables. Client will be created inside handler.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
 exports.handler = async (event, context) => {
   console.log('--- service-order-created INVOCATION ---');
   console.log('Timestamp:', new Date().toISOString());
 
+  // Ensure Supabase config is available for this invocation
+  if (!supabaseUrl || !supabaseServiceKey) {
+    console.error("Service-Order-Created: Supabase URL or Service Key missing from environment variables.");
+    return { statusCode: 500, body: JSON.stringify({ message: "Server configuration error." }) };
+  }
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  // Step 1: Validate HTTP Method
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: JSON.stringify({ error: 'Method Not Allowed' }) };
+  }
+
+  // Step 2: Get User Context from Netlify Identity (via JWT)
+  const user = context.clientContext && context.clientContext.user;
+
+  if (!user || !user.sub) { // user.sub is the standard JWT subject, used as Supabase auth.users.id
+    console.warn('Service-Order-Created: Unauthorized - No user or user.sub found in JWT context.');
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ message: 'Unauthorized: User identification failed. Please log in and try again.' }),
+    };
+  }
+
+  const userIdFromJwt = user.sub; // This is the ID that should exist in auth.users
+  console.log(`Service-Order-Created: Authenticated User ID (from JWT sub): ${userIdFromJwt}, Email: ${user.email}`);
+
+  // Step 3: Parse incoming JSON payload from the frontend
+  let payload;
   try {
-    const user = context.clientContext && context.clientContext.user;
+    payload = JSON.parse(event.body);
+  } catch (parseError) {
+    console.error('Service-Order-Created: Failed to parse JSON payload:', parseError, "Body:", event.body);
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: 'Invalid request format. Expected JSON payload.' }),
+    };
+  }
+  console.log('Service-Order-Created: Parsed payload received:', payload);
 
-    if (!user) {
-      console.warn('❌ No user found in context');
-      return {
-        statusCode: 401,
-        body: JSON.stringify({ message: 'Unauthorized: No user found in context' }),
-      };
-    }
-
-    console.log('✅ User object from clientContext is PRESENT.');
-    console.log('User Email:', user.email);
-    console.log('User Roles:', user.app_metadata?.roles);
-    console.log('User Sub (ID):', user.sub);
-
-    // ✅ Check if user exists in Supabase users table
-    const { data: existingUser, error: userCheckError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', user.sub)
-      .single();
-
-    if (userCheckError && userCheckError.code !== 'PGRST116') {
-      console.error('Error checking user:', userCheckError);
-    }
-
-    if (!existingUser) {
-      console.log('User not found in Supabase. Inserting...');
-      const { error: insertUserError } = await supabase.from('users').insert([
-        {
-          id: user.sub,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || null,
-          avatar_url: user.user_metadata?.avatar_url || null,
-          created_at: new Date().toISOString()
-        }
-      ]);
-
-      if (insertUserError) {
-        console.error('Error inserting user:', insertUserError);
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ message: 'Failed to insert user', error: insertUserError }),
-        };
-      }
-    }
-
-    let payload;
-    try {
-      payload = JSON.parse(event.body);
-    } catch (err) {
-      console.error('❌ Failed to parse payload:', err);
+  // Step 4: Validate required fields from the payload
+  // These field names must match what js/order-page.js sends in `dataToSend`
+  const requiredFields = ['customer_name', 'customer_email', 'service_type', 'project_details'];
+  for (const field of requiredFields) {
+    if (!payload[field] || String(payload[field]).trim() === '') { // Also check for empty strings
+      console.warn(`Service-Order-Created: Missing or empty required field in payload: ${field}`);
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: 'Invalid JSON payload' }),
+        body: JSON.stringify({ message: `Missing or invalid required field: ${field}. Please ensure all fields are filled.` }),
       };
     }
+  }
 
-    console.log('📦 Payload received:', payload);
+  // Step 5: Construct the record to be inserted into 'service_orders' table
+  const orderRecord = {
+    user_id: userIdFromJwt, // This is the critical link to auth.users
+    customer_name: payload.customer_name,
+    customer_email: payload.customer_email,
+    customer_phone: payload.customer_phone || null, // Optional field
+    service_type: payload.service_type,
+    project_details: payload.project_details,
+    status: 'new', // Default status for new orders
+    raw_form_data: payload // Store the received frontend payload for reference
+    // 'created_at' and 'id' for service_orders will be auto-generated by Supabase
+  };
+  console.log('Service-Order-Created: Final order record for Supabase insert:', orderRecord);
 
-    // Validate required fields
-    const requiredFields = ['customer_name', 'customer_email', 'service_type', 'project_details'];
-    for (const field of requiredFields) {
-      if (!payload[field]) {
-        console.warn(`❗ Missing required field: ${field}`);
+  // Step 6: Insert the order into Supabase 'service_orders' table
+  try {
+    const { data, error: insertOrderError } = await supabase
+      .from('service_orders') // Assumes 'public' schema, or your default search path
+      .insert([orderRecord])
+      .select(); // Optionally get the inserted row(s) back
+
+    if (insertOrderError) {
+      console.error('Service-Order-Created: Supabase insert error into service_orders:', JSON.stringify(insertOrderError, null, 2));
+      // Check for foreign key violation specifically
+      if (insertOrderError.code === '23503') { // PostgreSQL foreign key violation error code
+        console.error(`Service-Order-Created: Foreign key violation. User ID ${userIdFromJwt} likely not found in auth.users table.`);
         return {
-          statusCode: 400,
-          body: JSON.stringify({ message: `Missing required field: ${field}` }),
+          statusCode: 400, // Bad request because the user_id is invalid for the FK constraint
+          body: JSON.stringify({
+            message: 'Failed to create order: User account issue. Please ensure your account is properly set up or contact support.',
+            error_code: insertOrderError.code,
+          }),
         };
       }
-    }
-
-    const order = {
-      user_id: user.sub,
-      customer_name: payload.customer_name,
-      customer_email: payload.customer_email,
-      customer_phone: payload.customer_phone || null,
-      service_type: payload.service_type,
-      project_details: payload.project_details,
-      status: 'new',
-      created_at: new Date().toISOString()
-    };
-
-    console.log('📝 Final order to insert:', order);
-
-    const { data, error } = await supabase.from('service_orders').insert([order]);
-
-    if (error) {
-      console.error('🔥 Supabase insert error:', error);
       return {
-        statusCode: 500,
-        body: JSON.stringify({ message: 'Supabase insert failed', error }),
+        statusCode: 500, // General database error
+        body: JSON.stringify({
+          message: 'We encountered an issue recording your service inquiry. Please try again later.',
+          error_code: insertOrderError.code,
+        }),
       };
     }
 
-    console.log('✅ Insert success:', data);
-
+    const insertedOrder = data && data.length > 0 ? data[0] : null;
+    console.log('Service-Order-Created: Service order successfully saved. Inserted data:', JSON.stringify(insertedOrder, null, 2));
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Order created!', data }),
+      body: JSON.stringify({
+        message: 'Your service inquiry has been successfully submitted! We will be in touch with you soon.',
+        orderId: insertedOrder ? insertedOrder.id : null,
+      }),
     };
 
-  } catch (err) {
-    console.error('❌ Unexpected error:', err);
+  } catch (unexpectedError) {
+    // Catch any other unexpected errors during the try block for Supabase operation
+    console.error('Service-Order-Created: Unexpected error during Supabase operation:', unexpectedError);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Unexpected error', error: err.message }),
+      body: JSON.stringify({ message: 'An unexpected server error occurred while processing your inquiry.' }),
     };
   }
 };
