@@ -59,18 +59,17 @@ export const handler = async (event, context) => {
 
     // Step 5: Construct the order record
     const orderRecord = {
-      user_id: userId,
-      service_type: payload.service_type,
-      title: payload.title,
-      email: payload.email,
-      description: payload.description,
-      metadata: payload.metadata || null,
-      status: 'new',
-      created_at: new Date().toISOString(),
-      name: payload.name || null,
-      phone: payload.phone || null,
-      extra_notes: payload.extra_notes || null
+      user_id: user.sub,
+  customer_name: payload.customer_name,
+  customer_email: payload.customer_email,
+  customer_phone: payload.customer_phone || null,
+  service_type: payload.service_type,
+  project_details: payload.project_details || null,
+  status: 'new',
+  created_at: new Date().toISOString(),
+  raw_form_data: payload
     };
+
 
     console.log('📝 Final order record:', orderRecord);
 
