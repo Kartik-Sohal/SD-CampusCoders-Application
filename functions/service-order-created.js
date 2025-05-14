@@ -1,48 +1,19 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY // this matches what you have
+  process.env.SUPABASE_SERVICE_KEY
 );
-// Check if user exists in `users` table
-const { data: existingUser, error: userCheckError } = await supabase
-  .from('users')
-  .select('*')
-  .eq('id', user.sub)
-  .single();
 
-if (userCheckError && userCheckError.code !== 'PGRST116') {
-  console.error('Error checking user:', userCheckError);
-}
-
-if (!existingUser) {
-  console.log('User not found in Supabase. Inserting...');
-  const { error: insertUserError } = await supabase.from('users').insert([{
-    id: user.sub,
-    email: user.email,
-    full_name: user.user_metadata?.full_name || null,
-    avatar_url: user.user_metadata?.avatar_url || null,
-    created_at: new Date().toISOString()
-  }]);
-
-  if (insertUserError) {
-    console.error('Error inserting user:', insertUserError);
-  }
-}
-
-export const handler = async (event, context) => {
+exports.handler = async (event, context) => {
   console.log('--- service-order-created INVOCATION ---');
   console.log('Timestamp:', new Date().toISOString());
 
   try {
-    // Step 1: Log headers for debugging
-    console.log('Event Headers:', event.headers);
-
-    // Step 2: Verify user context from Netlify Identity
     const user = context.clientContext && context.clientContext.user;
 
     if (!user) {
-      console.warn('❌ No user found in context. Aborting.');
+      console.warn('❌ No user found in context');
       return {
         statusCode: 401,
         body: JSON.stringify({ message: 'Unauthorized: No user found in context' }),
@@ -54,14 +25,11 @@ export const handler = async (event, context) => {
     console.log('User Roles:', user.app_metadata?.roles);
     console.log('User Sub (ID):', user.sub);
 
-    const userId = user.sub; // This is the Supabase auth UID
-
-    // Step 3: Parse JSON body
     let payload;
     try {
       payload = JSON.parse(event.body);
-    } catch (parseErr) {
-      console.error('❌ Failed to parse JSON payload:', parseErr);
+    } catch (err) {
+      console.error('❌ Failed to parse payload:', err);
       return {
         statusCode: 400,
         body: JSON.stringify({ message: 'Invalid JSON payload' }),
@@ -70,7 +38,7 @@ export const handler = async (event, context) => {
 
     console.log('📦 Payload received:', payload);
 
-    // Step 4: Validate required fields
+    // Validate required fields
     const requiredFields = ['customer_name', 'customer_email', 'service_type', 'project_details'];
     for (const field of requiredFields) {
       if (!payload[field]) {
@@ -82,53 +50,73 @@ export const handler = async (event, context) => {
       }
     }
 
-    // Step 5: Construct the order record
-    const orderRecord = {
+    // ✅ Check if user exists in Supabase users table
+    const { data: existingUser, error: userCheckError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.sub)
+      .single();
+
+    if (userCheckError && userCheckError.code !== 'PGRST116') {
+      console.error('Error checking user:', userCheckError);
+    }
+
+    if (!existingUser) {
+      console.log('User not found in Supabase. Inserting...');
+      const { error: insertUserError } = await supabase.from('users').insert([
+        {
+          id: user.sub,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || null,
+          avatar_url: user.user_metadata?.avatar_url || null,
+          created_at: new Date().toISOString()
+        }
+      ]);
+
+      if (insertUserError) {
+        console.error('Error inserting user:', insertUserError);
+        return {
+          statusCode: 500,
+          body: JSON.stringify({ message: 'Failed to insert user', error: insertUserError }),
+        };
+      }
+    }
+
+    const order = {
       user_id: user.sub,
-  customer_name: payload.customer_name,
-  customer_email: payload.customer_email,
-  customer_phone: payload.customer_phone || null,
-  service_type: payload.service_type,
-  project_details: payload.project_details || null,
-  status: 'new',
-  created_at: new Date().toISOString(),
-  raw_form_data: payload
+      customer_name: payload.customer_name,
+      customer_email: payload.customer_email,
+      customer_phone: payload.customer_phone || null,
+      service_type: payload.service_type,
+      project_details: payload.project_details,
+      status: 'new',
+      created_at: new Date().toISOString()
     };
 
+    console.log('📝 Final order to insert:', order);
 
-    console.log('📝 Final order record:', orderRecord);
-
-    // Step 6: Insert into Supabase
-    const { data, error } = await supabase
-      .from('service_orders')
-      .insert([orderRecord]);
+    const { data, error } = await supabase.from('service_orders').insert([order]);
 
     if (error) {
       console.error('🔥 Supabase insert error:', error);
       return {
         statusCode: 500,
-        body: JSON.stringify({
-          message: 'Supabase error inserting service order',
-          error,
-        }),
+        body: JSON.stringify({ message: 'Supabase insert failed', error }),
       };
     }
 
-    console.log('✅ Service order inserted successfully!', data);
+    console.log('✅ Insert success:', data);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        message: 'Service order created successfully!',
-        data,
-      }),
+      body: JSON.stringify({ message: 'Order created!', data }),
     };
 
   } catch (err) {
-    console.error('❌ Unexpected error occurred:', err);
+    console.error('❌ Unexpected error:', err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Unexpected error occurred', error: err.message }),
+      body: JSON.stringify({ message: 'Unexpected error', error: err.message }),
     };
   }
 };
