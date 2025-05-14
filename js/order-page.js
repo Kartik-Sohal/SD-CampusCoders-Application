@@ -1,27 +1,32 @@
 // js/order-page.js
-import { escapeHTML } from './main.js';
+import { escapeHTML } from './main.js'; // Ensure main.js exports this
 
+// Get DOM elements. These will be null if not on the order.html page.
 const orderForm = document.getElementById('service-order-form');
 const submitOrderButton = document.getElementById('submit-order-button');
 const orderFormMessage = document.getElementById('order-form-message');
 const orderLoginPrompt = document.getElementById('order-login-prompt');
 const orderFormContainer = document.getElementById('order-form-container');
-const orderPageSubtitle = document.getElementById('order-page-subtitle');
-
+const orderPageSubtitle = document.getElementById('order-page-subtitle'); // Optional: for changing subtitle text
 
 function showOrderForm(user) {
     if (orderFormContainer) orderFormContainer.classList.remove('hidden');
     if (orderLoginPrompt) orderLoginPrompt.classList.add('hidden');
     if (orderPageSubtitle) orderPageSubtitle.textContent = "Please fill out the form below to tell us about your project needs. We'll be in touch soon!";
 
+    // Pre-fill form if user is logged in and form exists
     if (user && orderForm) {
         const nameInput = orderForm.querySelector('input[name="name"]');
         const emailInput = orderForm.querySelector('input[name="email"]');
+        
         if (nameInput && user.user_metadata && user.user_metadata.full_name && !nameInput.value) {
             nameInput.value = user.user_metadata.full_name;
         }
         if (emailInput && user.email && !emailInput.value) {
             emailInput.value = user.email;
+            // Optional: Make email readonly if pre-filled from authenticated user
+            // emailInput.readOnly = true;
+            // emailInput.classList.add('bg-slate-600', 'opacity-70'); // Visual cue for readonly
         }
     }
 }
@@ -32,45 +37,43 @@ function showOrderLoginPrompt() {
     if (orderPageSubtitle) orderPageSubtitle.textContent = "Log in to place an order and track its progress in your profile.";
 }
 
-
 async function handleOrderFormSubmit(event) {
     event.preventDefault(); 
 
     if (!orderForm || !submitOrderButton || !orderFormMessage) {
-        console.error("Order Page: Crucial form elements missing for submission.");
+        console.error("Order Page: Crucial form elements missing for submission handler.");
         return;
     }
 
     const user = window.netlifyIdentity ? window.netlifyIdentity.currentUser() : null;
     if (!user) {
-        orderFormMessage.textContent = 'Please log in to submit an order.';
+        orderFormMessage.textContent = 'SESSION EXPIRED: Please log in again to submit an order.';
         orderFormMessage.className = 'mt-4 text-center text-sm text-red-400';
-        showOrderLoginPrompt(); 
+        showOrderLoginPrompt(); // Re-show login prompt
         return;
     }
 
     submitOrderButton.disabled = true;
     submitOrderButton.textContent = 'Submitting...';
     orderFormMessage.textContent = '';
-    orderFormMessage.className = 'mt-4 text-center text-sm';
+    orderFormMessage.className = 'mt-4 text-center text-sm'; // Reset classes
 
     const formData = new FormData(orderForm);
     const formProps = Object.fromEntries(formData);
 
-    // This is the payload that service-order-created.js expects directly
-const dataToSend = {
-  customer_name: formProps.name,
-  customer_email: formProps.email,
-  customer_phone: formProps.phone,
-  service_type: formProps.service_type,
-  project_details: formProps.details
-};
-
+    // This is the payload structure expected by your functions/service-order-created.js
+    const dataToSend = {
+        customer_name: formProps.name, // Matches the 'name' attribute of the input field
+        customer_email: formProps.email,
+        customer_phone: formProps.phone,
+        service_type: formProps.service_type,
+        project_details: formProps.details 
+    };
     
     let headers = { 'Content-Type': 'application/json' };
     let token;
     try {
-        token = await user.jwt(true); // true forces refresh if token is stale
+        token = await user.jwt(true); 
         headers['Authorization'] = `Bearer ${token}`;
         console.log("Order Page: Sending JWT for user:", user.email);
     } catch (err) {
@@ -82,7 +85,7 @@ const dataToSend = {
         return;
     }
 
-    if (!token) { // Should not happen if user object exists, but defensive check
+    if (!token) { 
         console.error("Order Page: JWT is null or undefined after attempting to get it.");
         orderFormMessage.textContent = 'Authentication token missing. Please try logging out and in again.';
         orderFormMessage.classList.add('text-red-400');
@@ -100,122 +103,76 @@ const dataToSend = {
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ error: `Server error: ${response.status}. Please try again.`}));
-            orderFormMessage.textContent = `Error: ${escapeHTML(errorData.error || 'Could not submit your inquiry.')}`;
-            orderFormMessage.classList.add('text-red-400');
+            orderFormMessage.textContent = `Error: ${escapeHTML(errorData.message || errorData.error || 'Could not submit your inquiry.')}`;
+            orderFormMessage.className = 'mt-4 text-center text-sm text-red-400';
             console.error("Order Page: Error response from service-order-created:", errorData);
-            // Do not throw error here to allow finally block to run
         } else {
             const result = await response.json();
-            orderFormMessage.textContent = escapeHTML(result.message || 'Your inquiry has been submitted successfully! We will get back to you soon.');
-            order_form_message.className = 'mt-4 text-center text-sm text-green-400'; // Ensure green on success
-            orderForm.reset(); 
-        }
-
-    } catch (error) {
-        console.error('Order Page: Error submitting order inquiry via JS fetch:', error);
-        orderFormMessage.textContent = 'A network error occurred. Please check your connection and try again.';
-        orderFormMessage.classList.add('text-red-400');
-    } finally {
-        submitOrderButton.disabled = false;
-        submitOrderButton.textContent = 'Submit Inquiry';
-    }
-}
-
-async function handleOrderFormSubmit(event) {
-    // ... (prevent default, get user, button disabling, get formData, get JWT, setup headers) ...
-    // ... (all the existing logic before the fetch call) ...
-
-    try {
-        const response = await fetch('/.netlify/functions/service-order-created', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(dataToSend) 
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ error: `Server error: ${response.status}. Please try again.`}));
-            orderFormMessage.textContent = `Error: ${escapeHTML(errorData.error || 'Could not submit your inquiry.')}`;
-            orderFormMessage.className = 'mt-4 text-center text-sm text-red-400'; // Ensure red on error
-            console.error("Order Page: Error response from service-order-created:", errorData);
-            // No redirect on error, user stays on form to see message
-        } else {
-            // SUCCESS!
-            // orderForm.reset(); // Optional: reset form before redirecting
-            // Instead of just showing a message, redirect to thank you page
+            // Redirect to a thank-you page on success
             window.location.href = '/thank-you-order.html'; 
-            // The message on the thank you page will confirm success.
-            // If you want to pass the orderId to the thank you page, you could do:
-            // const result = await response.json();
-            // window.location.href = `/thank-you-order.html?orderId=${result.orderId}`;
-            // Then thank-you-order.html could use JS to read this query param if needed.
+            // If you want to pass orderId: `/thank-you-order.html?orderId=${result.orderId}`
+            // orderFormMessage.textContent = escapeHTML(result.message || 'Your inquiry has been submitted successfully!');
+            // orderFormMessage.className = 'mt-4 text-center text-sm text-green-400'; 
+            // orderForm.reset(); 
         }
 
-    } catch (error) { // This catch is for client-side fetch errors (e.g., network down)
+    } catch (error) { 
         console.error('Order Page: Error submitting order inquiry via JS fetch:', error);
         orderFormMessage.textContent = 'A network connection error occurred. Please check your connection and try again.';
-        orderFormMessage.className = 'mt-4 text-center text-sm text-red-400'; // Ensure red on error
+        orderFormMessage.className = 'mt-4 text-center text-sm text-red-400';
     } finally {
         // Re-enable button only if there was an error and we didn't redirect
-        if (!window.location.pathname.endsWith('/thank-you-order.html')) { // Check if not redirected
+        if (submitOrderButton && !window.location.pathname.endsWith('/thank-you-order.html')) {
              submitOrderButton.disabled = false;
              submitOrderButton.textContent = 'Submit Inquiry';
         }
     }
 }
 
+// This function is exported and called by main.js if the order form element is present
 export function initOrderPage() {
-    if (!document.getElementById('service-order-form') && !document.getElementById('order-login-prompt')) {
-        return; // Not on the order page, or essential elements are missing
+    // Ensure we are on the order page by checking for a specific element unique to it,
+    // or rely on main.js to only call this if 'service-order-form' exists.
+    if (!document.getElementById('service-order-form-section')) { 
+        // console.log("Order Page: Not on order page or main section missing, skipping init.");
+        return;
     }
     console.log("Order Page: Initializing logic...");
 
     const user = window.netlifyIdentity ? window.netlifyIdentity.currentUser() : null;
+    
     if (user) {
-        if (orderFormContainer) showOrderForm(user); // Ensure container is defined
+        if (orderFormContainer) showOrderForm(user);
         if (orderForm) {
             orderForm.removeEventListener('submit', handleOrderFormSubmit); 
             orderForm.addEventListener('submit', handleOrderFormSubmit);
+        } else {
+            console.warn("Order Page: orderForm element not found for logged-in user setup.");
         }
     } else {
-        if (orderLoginPrompt) showOrderLoginPrompt(); // Ensure container is defined
+        if (orderLoginPrompt) showOrderLoginPrompt();
     }
     
+    // Setup listeners for auth state changes specific to this page's needs
     if (window.netlifyIdentity) {
-        const handleLogin = (loggedInUser) => {
-            if (window.location.pathname.includes('/order.html') && orderFormContainer) {
-                console.log("Order Page: User logged in, showing form.");
-                showOrderForm(loggedInUser);
-                 if (orderForm) { // Re-add listener in case it was missed or for safety
-                    orderForm.removeEventListener('submit', handleOrderFormSubmit); 
-                    orderForm.addEventListener('submit', handleOrderFormSubmit);
-                }
-            }
-        };
-        const handleLogout = () => {
-            if (window.location.pathname.includes('/order.html') && orderLoginPrompt) {
-                console.log("Order Page: User logged out, showing login prompt.");
-                showOrderLoginPrompt();
-            }
-        };
-
-        window.netlifyIdentity.on('login', handleLogin);
-        window.netlifyIdentity.on('logout', handleLogout);
-
-        // Also handle if init event provides user after DOMContentLoaded but before login event
-        window.netlifyIdentity.on('init', (initializedUser) => {
-             if (window.location.pathname.includes('/order.html')) {
-                if (initializedUser) {
-                    console.log("Order Page: User already initialized, showing form.");
-                    showOrderForm(initializedUser);
-                     if (orderForm) {
-                        orderForm.removeEventListener('submit', handleOrderFormSubmit); 
+        const reEvaluateOrderPageDisplay = (eventUser) => {
+            if (window.location.pathname.includes('/order.html')) { // Only act if on order page
+                console.log(`Order Page: Netlify Identity event '${event.type}' with user:`, eventUser ? eventUser.email : 'null');
+                if (eventUser) {
+                    if (orderFormContainer) showOrderForm(eventUser);
+                    if (orderForm) { // Re-attach listener if form is now shown
+                        orderForm.removeEventListener('submit', handleOrderFormSubmit);
                         orderForm.addEventListener('submit', handleOrderFormSubmit);
                     }
-                } else if(orderLoginPrompt) { // Only show prompt if user is null AND on order page
-                    console.log("Order Page: No user on init, showing login prompt.");
-                    showOrderLoginPrompt();
+                } else {
+                    if (orderLoginPrompt) showOrderLoginPrompt();
                 }
             }
-        });
+        };
+
+        window.netlifyIdentity.on('login', reEvaluateOrderPageDisplay);
+        window.netlifyIdentity.on('logout', () => reEvaluateOrderPageDisplay(null));
+        // The 'init' event in auth.js already handles initial state, but if needed here too:
+        // window.netlifyIdentity.on('init', reEvaluateOrderPageDisplay); 
     }
 }
