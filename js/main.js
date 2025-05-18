@@ -1,6 +1,7 @@
 // js/main.js
 import { initAuth, updateNavOnAuthStateChange } from './auth.js';
 import { initAiChat } from './ai-chat.js';
+import { initNavigation } from './navigation.js';
 // Page-specific modules will be dynamically imported below
 
 // General site initializations
@@ -47,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFadeInSections();
 
     // Initialize core modules that are generally needed
+    initNavigation();
     initAuth();    // Sets up Netlify Identity event listeners and calls page-specific updates via reinitializePageSpecificModules
     initAiChat();  // Sets up the AI Chat widget listeners
 

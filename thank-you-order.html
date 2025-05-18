@@ -9,9 +9,80 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body class="bg-slate-900 text-slate-100 antialiased">
+    
     <!-- Navigation -->
     <nav class="bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 shadow-lg">
-        <!-- ... Your consistent navigation ... -->
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="/" aria-label="SD CampusCoders Home">
+                        <!-- YOUR SVG LOGO CODE -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 180" class="h-10 md:h-12 w-auto" aria-hidden="true"><defs><linearGradient id="shieldGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#0A3D62; stop-opacity:1" /><stop offset="100%" style="stop-color:#1C4E80; stop-opacity:1" /></linearGradient></defs><path d="M 50 10 L 200 10 L 200 90 Q 125 150 50 90 Z" fill="url(#shieldGradient)" stroke="#A0AEC0" stroke-width="2"/><text x="125" y="75" font-family="'Poppins', Arial, sans-serif" font-size="50" fill="white" text-anchor="middle" font-weight="bold">SD</text><text x="65" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7"><</text><text x="185" y="70" font-family="monospace, 'Courier New'" font-size="20" fill="#87CEEB" opacity="0.7" text-anchor="end">></text><text x="125" y="138" font-family="'Poppins', Arial, sans-serif" font-size="28" fill="white" text-anchor="middle" font-weight="600">CampusCoders</text><text x="125" y="160" font-family="'Poppins', Arial, sans-serif" font-size="10" fill="#A0AEC0" text-anchor="middle">SD College, Hoshiarpur</text></svg>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Links (Hidden on mobile) -->
+                <div class="hidden md:flex md:items-center md:space-x-4">
+                    <a href="/projects.html" class="text-slate-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Projects</a>
+                    <a href="/order.html" class="text-slate-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Order Services</a>
+                    <a href="/apply.html" class="text-slate-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Careers</a>
+                    <a href="/orders-dashboard.html" id="nav-orders-dashboard-link" class="text-slate-300 hover:text-indigo-400 px-3 py-2 rounded-md text-sm font-medium transition-colors hidden">Orders Dashboard</a>
+                </div>
+
+                <!-- Right side of Navbar: User/Login and Mobile Menu Button -->
+                <div class="flex items-center">
+                    <!-- Desktop User/Login Button & Dropdown -->
+                    <div class="hidden md:block ml-4 relative">
+                        <button type="button" id="user-menu-button" class="bg-slate-800 hover:bg-slate-700 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-colors" aria-expanded="false" aria-haspopup="true">
+                            <span class="sr-only">Open user menu</span>
+                            <span id="desktop-user-indicator" class="inline-flex items-center justify-center h-8 min-w-[80px] px-3 py-1.5 rounded-md text-xs font-medium text-slate-300">
+                                <span id="nav-username-desktop" class="truncate max-w-[100px]">Account</span>
+                                <svg id="desktop-login-icon" class="h-4 w-4 ml-1 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 8V3m0 0L6 5m2-2 2 2M4 9.5A6.5 6.5 0 1 1 10.5 16h-1A6.5 6.5 0 0 1 4 9.5Z" /></svg>
+                            </span>
+                        </button>
+                        <div id="user-menu" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none transform opacity-0 scale-95 transition ease-out duration-100 hidden" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                            <a href="/profile.html" id="desktop-nav-profile-link" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white hidden" role="menuitem" tabindex="-1">My Profile</a>
+                            <button id="desktop-nav-logout-button" class="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white hidden" role="menuitem" tabindex="-1">Sign out</button>
+                            <button id="desktop-nav-login-button" class="block w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white hidden" role="menuitem" tabindex="-1">Log In / Sign Up</button>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button (Hidden on desktop) -->
+                    <div class="md:hidden ml-3">
+                        <button type="button" id="mobile-menu-button" class="bg-slate-800 inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <svg class="block h-6 w-6" id="icon-menu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            <svg class="hidden h-6 w-6" id="icon-close" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu, show/hide based on menu state. THIS IS THE MISSING PART -->
+        <div class="md:hidden hidden bg-slate-800 border-t border-slate-700" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="/projects.html" class="text-slate-300 hover:bg-slate-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Projects</a>
+                <a href="/order.html" class="text-slate-300 hover:bg-slate-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Order Services</a>
+                <a href="/apply.html" class="text-slate-300 hover:bg-slate-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Careers</a>
+                <a href="/orders-dashboard.html" id="mobile-nav-orders-dashboard-link" class="text-slate-300 hover:bg-slate-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium hidden">Orders Dashboard</a>
+            </div>
+            <div class="pt-4 pb-3 border-t border-slate-700">
+                <div id="mobile-user-info" class="items-center px-5 hidden"> <!-- Shown when logged in -->
+                    <div class="ml-3"> <!-- Removed flex-shrink-0 for better alignment if avatar is not present -->
+                        <div id="mobile-nav-username" class="text-base font-medium leading-none text-white">Username</div>
+                        <div id="mobile-nav-email" class="text-sm font-medium leading-none text-slate-400">user@example.com</div>
+                    </div>
+                </div>
+                <div class="mt-3 px-2 space-y-1">
+                    <a href="/profile.html" id="mobile-nav-profile-link" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-700 hidden">My Profile</a>
+                    <button id="mobile-nav-logout-button" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-700 hidden">Sign out</button>
+                    <button id="mobile-nav-login-button" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-700 hidden">Log In / Sign Up</button>
+                </div>
+            </div>
+        </div>
+        <!-- END Mobile menu -->
     </nav>
 
     <main class="container mx-auto px-6 py-24 text-center min-h-[calc(100vh-200px)] flex flex-col justify-center items-center">
